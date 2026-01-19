@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squad List</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        ul { list-style-type: none; padding: 0; }
+        li { background-color: #f9f9f9; margin: 5px 0; padding: 10px; border-radius: 5px; }
+        a { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; }
+        a:hover { background-color: #0b7dda; }
+    </style>
+</head>
+<body>
+    <h1>Squad List</h1>
+    {% if club.squad %}
+        <ul>
+        {% for player in club.squad %}
+            <li>{{ player }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No players yet! Recruit some soon...</p>
+    {% endif %}
+    <a href="/">Back to Menu</a>
+</body>
+</html>

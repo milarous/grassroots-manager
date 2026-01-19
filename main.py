@@ -1,5 +1,4 @@
-import tkinter as tk
-from tkinter import messagebox
+from flask import Flask, render_template
 
 # -----------------------------
 # Core Data Classes
@@ -22,76 +21,32 @@ class Club:
 
 
 # -----------------------------
-# GUI Application
+# Flask Web Application
 # -----------------------------
-class GrassrootsManagerApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Grassroots Football Manager")
-        self.root.geometry("500x400")
+app = Flask(__name__)
 
-        # Initialize a default club
-        self.club = Club("Local United")
+# Initialize a default club
+club = Club("Local United")
 
-        # Show the main menu
-        self.show_main_menu()
+@app.route('/')
+def main_menu():
+    return render_template('index.html')
 
-    def clear_window(self):
-        """Remove all widgets from the window."""
-        for widget in self.root.winfo_children():
-            widget.destroy()
+@app.route('/club')
+def club_overview():
+    return render_template('club.html', club=club)
 
-    def show_main_menu(self):
-        self.clear_window()
+@app.route('/squad')
+def squad_view():
+    return render_template('squad.html', club=club)
 
-        title = tk.Label(self.root, text="Grassroots Football Manager", font=("Arial", 18, "bold"))
-        title.pack(pady=20)
-
-        start_btn = tk.Button(self.root, text="Start Season", width=20, height=2,
-                              command=self.show_club_screen)
-        start_btn.pack(pady=10)
-
-        squad_btn = tk.Button(self.root, text="View Squad", width=20, height=2,
-                              command=self.view_squad)
-        squad_btn.pack(pady=10)
-
-        exit_btn = tk.Button(self.root, text="Exit Game", width=20, height=2,
-                             command=self.root.quit)
-        exit_btn.pack(pady=10)
-
-    def show_club_screen(self):
-        self.clear_window()
-
-        title = tk.Label(self.root, text="Club Overview", font=("Arial", 16, "bold"))
-        title.pack(pady=10)
-
-        summary = tk.Label(self.root, text=self.club.get_summary(), font=("Arial", 12), justify="left")
-        summary.pack(pady=20)
-
-        back_btn = tk.Button(self.root, text="Back to Menu", command=self.show_main_menu)
-        back_btn.pack(pady=20)
-
-    def view_squad(self):
-        self.clear_window()
-
-        title = tk.Label(self.root, text="Squad List", font=("Arial", 16, "bold"))
-        title.pack(pady=10)
-
-        if not self.club.squad:
-            empty_msg = tk.Label(self.root, text="No players yet! Recruit some soon...", font=("Arial", 12))
-            empty_msg.pack(pady=20)
-        else:
-            for player in self.club.squad:
-                tk.Label(self.root, text=str(player)).pack()
-
-        back_btn = tk.Button(self.root, text="Back to Menu", command=self.show_main_menu)
-        back_btn.pack(pady=20)
+@app.route('/exit')
+def exit_game():
+    return render_template('exit.html')
 
 
 # -----------------------------
 # Run Application
 # -----------------------------
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = GrassrootsManagerApp(root)
-    root.mainloop()
+    app.run(debug=True)
