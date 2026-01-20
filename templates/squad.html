@@ -5,24 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Squad List</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        ul { list-style-type: none; padding: 0; }
-        li { background-color: #f9f9f9; margin: 5px 0; padding: 10px; border-radius: 5px; }
-        a { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; }
-        a:hover { background-color: #0b7dda; }
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .return-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        
+        .return-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .container {
+            display: flex;
+            gap: 40px;
+        }
+        
+        .left-menu {
+            flex: 0 0 150px;
+        }
+        
+        .menu-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            box-sizing: border-box;
+            line-height: 1.5;
+        }
+        
+        .menu-button:hover {
+            background-color: #45a049;
+        }
+        
+        .right-content {
+            flex: 1;
+        }
+        
+        ul { 
+            list-style-type: none; 
+            padding: 0; 
+        }
+        
+        li { 
+            background-color: #f9f9f9; 
+            margin: 5px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
-    <h1>Squad List</h1>
-    {% if club.squad %}
-        <ul>
-        {% for player in club.squad %}
-            <li>{{ player }}</li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No players yet! Recruit some soon...</p>
-    {% endif %}
-    <a href="/">Back to Menu</a>
+    <div class="header">
+        <h1>Squad List</h1>
+        <a href="/" class="return-btn">Return to Main Menu</a>
+    </div>
+    
+    <div class="container">
+        <div class="left-menu">
+            <a href="/club" class="menu-button">Club Overview</a>
+            <a href="/squad" class="menu-button" style="background-color: #2196F3; cursor: default;">View Squad</a>
+        </div>
+        
+        <div class="right-content">
+            {% if club.squad %}
+                <ul>
+                {% for player in club.squad %}
+                    <li>{{ player }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No players yet! Recruit some soon...</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
 </body>
 </html>

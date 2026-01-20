@@ -6,14 +6,162 @@
     <title>Grassroots Football Manager</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        a { display: inline-block; margin: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; }
-        a:hover { background-color: #45a049; }
+        .menu-buttons { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        a, button { display: block; width: 200px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; border: none; cursor: pointer; font-size: 16px; box-sizing: border-box; }
+        a:hover, button:hover { background-color: #45a049; }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .modal.show {
+            display: block;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-content h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+            margin: 0;
+        }
+        
+        .modal-buttons .cancel {
+            background-color: #f44336;
+        }
+        
+        .modal-buttons .cancel:hover {
+            background-color: #da190b;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
     <h1>Grassroots Football Manager</h1>
-    <a href="/club">Start Season</a>
-    <a href="/squad">View Squad</a>
-    <a href="/exit">Exit Game</a>
+    <p style="font-size: 16px; color: #666; margin-top: -10px;">A grassroots-to-pro football club management sim</p>
+    <div class="menu-buttons">
+        <button onclick="openClubForm()">Create Club</button>
+        <a href="/exit">Exit Game</a>
+    </div>
+    
+    <!-- New Club Information Modal -->
+    <div id="clubFormModal" class="modal">
+        <div class="modal-content">
+            <h2>New Club Information</h2>
+            <form id="clubForm" method="POST" action="/create_club">
+                <div class="form-group">
+                    <label for="club_name">Club Name:</label>
+                    <input type="text" id="club_name" name="club_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="country">Country:</label>
+                    <select id="country" name="country" required>
+                        <option value="">-- Select Country --</option>
+                        <option value="Australia">Australia</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="city">City:</label>
+                    <select id="city" name="city" required>
+                        <option value="">-- Select City --</option>
+                        <option value="Adelaide">Adelaide</option>
+                    </select>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="submit">Confirm</button>
+                    <button type="button" class="cancel" onclick="closeClubForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openClubForm() {
+            document.getElementById('clubFormModal').classList.add('show');
+        }
+        
+        function closeClubForm() {
+            document.getElementById('clubFormModal').classList.remove('show');
+            document.getElementById('clubForm').reset();
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            var modal = document.getElementById('clubFormModal');
+            if (event.target == modal) {
+                closeClubForm();
+            }
+        }
+    </script>
+    
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
 </body>
 </html>
