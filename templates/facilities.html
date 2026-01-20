@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Overview</title>
+    <title>Club Facilities</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
-            padding: 20px; 
+            padding: 20px;
             margin: 0;
         }
         
@@ -136,14 +136,16 @@
             flex: 1;
         }
         
-        .club-info {
-            font-family: inherit;
-            white-space: pre-wrap;
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 5px;
-            display: inline-block;
-            text-align: left;
+        ul { 
+            list-style-type: none; 
+            padding: 0; 
+        }
+        
+        li { 
+            background-color: #f9f9f9; 
+            margin: 5px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
         }
         
         footer {
@@ -157,7 +159,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>Club Overview</h1>
+        <h1>Club Facilities</h1>
         <div style="position: absolute; top: 0; right: 0; display: flex; gap: 10px; align-items: center;">
             <button onclick="openSaveModal()" class="save-btn">Save Game</button>
             <a href="/" class="return-btn">Return to Main Menu</a>
@@ -166,24 +168,14 @@
     
     <div class="container">
         <div class="left-menu">
-            <a href="/club" class="menu-button" style="background-color: #2196F3; cursor: default;">Club Overview</a>
+            <a href="/club" class="menu-button">Club Overview</a>
             <a href="/squad" class="menu-button">View Squad</a>
-            <a href="/facilities" class="menu-button">View Facilities</a>
+            <a href="/facilities" class="menu-button" style="background-color: #2196F3; cursor: default;">View Facilities</a>
             <a href="/competitions" class="menu-button">View Competitions</a>
         </div>
         
         <div class="right-content">
-            {% if club %}
-            <div class="club-info">Club: {{ club.name }}
-City: {{ club.city }}
-Country: {{ club.country }}
-Finances: ${{ club.finances }}
-Reputation: {{ club.reputation }}
-Facilities: {{ club.facilities }}
-Competition: {{ club.competition }}</div>
-            {% else %}
-            <p>No club created yet. Please start a new season.</p>
-            {% endif %}
+            <p>No facilities yet! Build some soon...</p>
         </div>
     </div>
     

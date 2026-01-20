@@ -18,9 +18,6 @@
         }
         
         .return-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
             padding: 10px 20px;
             background-color: #2196F3;
             color: white;
@@ -30,6 +27,79 @@
         
         .return-btn:hover {
             background-color: #0b7dda;
+        }
+        
+        .save-btn {
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .save-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal.show {
+            display: block;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-content h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .slot-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .slot-btn {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .slot-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
         }
         
         .container {
@@ -90,16 +160,22 @@
 <body>
     <div class="header">
         <h1>Squad List</h1>
-        <a href="/" class="return-btn">Return to Main Menu</a>
+        <div style="position: absolute; top: 0; right: 0; display: flex; gap: 10px; align-items: center;">
+            <button onclick="openSaveModal()" class="save-btn">Save Game</button>
+            <a href="/" class="return-btn">Return to Main Menu</a>
+        </div>
     </div>
     
     <div class="container">
         <div class="left-menu">
             <a href="/club" class="menu-button">Club Overview</a>
             <a href="/squad" class="menu-button" style="background-color: #2196F3; cursor: default;">View Squad</a>
+            <a href="/facilities" class="menu-button">View Facilities</a>
+            <a href="/competitions" class="menu-button">View Competitions</a>
         </div>
         
         <div class="right-content">
+            <h2>Current Squad</h2>
             {% if club.squad %}
                 <ul>
                 {% for player in club.squad %}
@@ -107,7 +183,23 @@
                 {% endfor %}
                 </ul>
             {% else %}
-                <p>No players yet! Recruit some soon...</p>
+                <p>No players in squad yet!</p>
+            {% endif %}
+            
+            <h2>Available Players</h2>
+            <a href="/scout_players" class="menu-button" style="display: inline-block; width: auto; margin-bottom: 15px;">Scout for Players</a>
+            
+            {% if available_players %}
+                <ul>
+                {% for player in available_players %}
+                    <li>
+                        {{ player }}
+                        <a href="/recruit_player/{{ loop.index0 }}" class="menu-button" style="display: inline-block; width: auto; margin-left: 10px; padding: 5px 10px; font-size: 12px;">Recruit</a>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No available players. Click "Scout for Players" to find some!</p>
             {% endif %}
         </div>
     </div>
@@ -115,5 +207,42 @@
     <footer>
         <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
     </footer>
+    
+    <!-- Save Game Modal -->
+    <div id="saveModal" class="modal">
+        <div class="modal-content">
+            <h3>Select Save Slot</h3>
+            <div class="slot-buttons">
+                <button onclick="saveGame(1)" class="slot-btn">Save to Slot 1</button>
+                <button onclick="saveGame(2)" class="slot-btn">Save to Slot 2</button>
+                <button onclick="saveGame(3)" class="slot-btn">Save to Slot 3</button>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeSaveModal()" style="background-color: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openSaveModal() {
+            document.getElementById('saveModal').classList.add('show');
+        }
+        
+        function closeSaveModal() {
+            document.getElementById('saveModal').classList.remove('show');
+        }
+        
+        function saveGame(slot) {
+            window.location.href = '/save_game/' + slot;
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('saveModal');
+            if (event.target === modal) {
+                closeSaveModal();
+            }
+        }
+    </script>
 </body>
 </html>

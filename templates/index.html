@@ -90,6 +90,62 @@
             background-color: #da190b;
         }
         
+        /* Load Modal styles */
+        .load-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .load-modal.show {
+            display: block;
+        }
+        
+        .load-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .load-modal-content h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .load-slot-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .load-slot-btn {
+            padding: 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .load-slot-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .load-slot-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
         footer {
             margin-top: 50px;
             padding-top: 20px;
@@ -104,7 +160,23 @@
     <p style="font-size: 16px; color: #666; margin-top: -10px;">A grassroots-to-pro football club management sim</p>
     <div class="menu-buttons">
         <button onclick="openClubForm()">Create Club</button>
+        <button onclick="openLoadModal()" style="color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Load Game</button>
         <a href="/exit">Exit Game</a>
+    </div>
+    
+    <!-- Load Game Modal -->
+    <div id="loadModal" class="load-modal">
+        <div class="load-modal-content">
+            <h3>Select Load Slot</h3>
+            <div class="load-slot-buttons">
+                <button onclick="loadGame(1)" class="load-slot-btn" id="loadSlot1">Load Slot 1</button>
+                <button onclick="loadGame(2)" class="load-slot-btn" id="loadSlot2">Load Slot 2</button>
+                <button onclick="loadGame(3)" class="load-slot-btn" id="loadSlot3">Load Slot 3</button>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button onclick="closeLoadModal()" style="background-color: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
     </div>
     
     <!-- New Club Information Modal -->
@@ -151,11 +223,31 @@
             document.getElementById('clubForm').reset();
         }
         
+        function openLoadModal() {
+            // Update button states based on save slots
+            {% for slot, exists in save_slots.items() %}
+                document.getElementById('loadSlot{{ slot }}').disabled = {% if exists %}false{% else %}true{% endif %};
+            {% endfor %}
+            document.getElementById('loadModal').classList.add('show');
+        }
+        
+        function closeLoadModal() {
+            document.getElementById('loadModal').classList.remove('show');
+        }
+        
+        function loadGame(slot) {
+            window.location.href = '/load_game/' + slot;
+        }
+        
         // Close modal when clicking outside of it
         window.onclick = function(event) {
             var modal = document.getElementById('clubFormModal');
+            var loadModal = document.getElementById('loadModal');
             if (event.target == modal) {
                 closeClubForm();
+            }
+            if (event.target == loadModal) {
+                closeLoadModal();
             }
         }
     </script>

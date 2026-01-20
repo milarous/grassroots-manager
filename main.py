@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 
+import os
+import pickle
+
 # -----------------------------
 # Core Data Classes
 # -----------------------------
@@ -12,6 +15,7 @@ class Club:
         self.reputation = 1        # starts as unknown
         self.squad = []            # will add later
         self.facilities = "None"
+        self.competition = "None"
 
     def get_summary(self):
         return (
@@ -20,8 +24,21 @@ class Club:
             f"Country: {self.country}\n"
             f"Finances: ${self.finances}\n"
             f"Reputation: {self.reputation}\n"
-            f"Facilities: {self.facilities}"
+            f"Facilities: {self.facilities}\n"
+            f"Competition: {self.competition}"
         )
+
+
+class Player:
+    def __init__(self, name, age, position, skill_level=1):
+        self.name = name
+        self.age = age
+        self.position = position  # e.g., "Forward", "Midfielder", "Defender", "Goalkeeper"
+        self.skill_level = skill_level  # 1-10 scale
+        self.player_type = "Senior"  # For now, only Senior players
+
+    def __str__(self):
+        return f"{self.name} ({self.age}, {self.position}, Skill: {self.skill_level})"
 
 
 # -----------------------------
@@ -32,9 +49,68 @@ app = Flask(__name__)
 # Initialize a default club
 club = None
 
+# Available players for recruitment
+available_players = []
+
+# Create saves directory if it doesn't exist
+if not os.path.exists('saves'):
+    os.makedirs('saves')
+
+def save_game(slot):
+    """Save the current game state to a slot"""
+    global club, available_players
+    save_data = {
+        'club': club,
+        'available_players': available_players
+    }
+    with open(f'saves/slot_{slot}.pkl', 'wb') as f:
+        pickle.dump(save_data, f)
+
+def load_game(slot):
+    """Load game state from a slot"""
+    global club, available_players
+    try:
+        with open(f'saves/slot_{slot}.pkl', 'rb') as f:
+            save_data = pickle.load(f)
+            club = save_data['club']
+            available_players = save_data['available_players']
+        return True
+    except FileNotFoundError:
+        return False
+
+def get_save_slots():
+    """Get status of all save slots"""
+    slots = {}
+    for i in range(1, 4):
+        slots[i] = os.path.exists(f'saves/slot_{i}.pkl')
+    return slots
+
+def generate_random_player():
+    """Generate a random player for recruitment"""
+    import random
+    
+    first_names = ["John", "Mike", "David", "James", "Robert", "William", "Thomas", "Daniel", "Matthew", "Joseph"]
+    last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"]
+    
+    name = f"{random.choice(first_names)} {random.choice(last_names)}"
+    age = random.randint(18, 35)
+    positions = ["Forward", "Midfielder", "Defender", "Goalkeeper"]
+    position = random.choice(positions)
+    skill_level = random.randint(1, 5)  # Start with lower skilled players for grassroots
+    
+    return Player(name, age, position, skill_level)
+
+def scout_players():
+    """Add some random players to the available pool"""
+    global available_players
+    num_players = 3  # Scout 3 players at a time
+    for _ in range(num_players):
+        available_players.append(generate_random_player())
+
 @app.route('/')
 def main_menu():
-    return render_template('index.html')
+    save_slots = get_save_slots()
+    return render_template('index.html', save_slots=save_slots)
 
 @app.route('/create_club', methods=['POST'])
 def create_club():
@@ -54,7 +130,42 @@ def club_overview():
 
 @app.route('/squad')
 def squad_view():
-    return render_template('squad.html', club=club)
+    return render_template('squad.html', club=club, available_players=available_players)
+
+@app.route('/scout_players')
+def scout_players_route():
+    scout_players()
+    return redirect(url_for('squad_view'))
+
+@app.route('/recruit_player/<int:player_index>')
+def recruit_player(player_index):
+    if club is None:
+        return redirect(url_for('main_menu'))
+    global available_players
+    if 0 <= player_index < len(available_players):
+        player = available_players.pop(player_index)
+        club.squad.append(player)
+    return redirect(url_for('squad_view'))
+
+@app.route('/facilities')
+def facilities_view():
+    return render_template('facilities.html', club=club)
+
+@app.route('/competitions')
+def competitions_view():
+    return render_template('competitions.html', club=club)
+
+@app.route('/save_game/<int:slot>')
+def save_game_route(slot):
+    if 1 <= slot <= 3:
+        save_game(slot)
+    return redirect(request.referrer or url_for('main_menu'))
+
+@app.route('/load_game/<int:slot>')
+def load_game_route(slot):
+    if 1 <= slot <= 3 and load_game(slot):
+        return redirect(url_for('club_overview'))
+    return redirect(url_for('main_menu'))
 
 @app.route('/exit')
 def exit_game():
