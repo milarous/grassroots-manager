@@ -12,4 +12,7 @@ __pycache__/
 .DS_Store
 
 # Editor settings
-.vscode/flask.log
+.vscode/
+
+# Log files
+*.log
