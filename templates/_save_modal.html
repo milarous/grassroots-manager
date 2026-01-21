@@ -1,0 +1,32 @@
+<!-- Save Game Modal - Include this in any page that needs save functionality -->
+<!-- Requires: save_slots variable to be passed from Flask -->
+<!-- Requires: static/save_modal.js to be included in the page -->
+
+<div id="saveModal" class="modal">
+    <div class="modal-content">
+        <h3>Save Game</h3>
+        <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Select a slot to overwrite or create a new save</p>
+        
+        <div id="slotSelectionStep">
+            <div class="slot-buttons" id="slotButtonsContainer">
+                <!-- Slots will be populated via JavaScript -->
+            </div>
+        </div>
+        
+        <div id="labelConfirmStep" style="display: none;">
+            <div id="selectedSlotInfo" style="padding: 15px; background-color: #f0f0f0; border-radius: 4px; margin-bottom: 15px;">
+                <!-- Selected slot info will be shown here -->
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="saveLabel" style="display: block; margin-bottom: 5px; font-weight: bold;">Save Label:</label>
+                <input type="text" id="saveLabel" name="label" placeholder="Enter a name for this save" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+            </div>
+        </div>
+        
+        <div class="modal-buttons">
+            <button id="backBtn" onclick="backToSlotSelection()" style="display: none; background-color: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Back</button>
+            <button id="confirmBtn" onclick="confirmSave()" style="display: none; background-color: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Confirm Save</button>
+            <button onclick="closeSaveModal()" style="background-color: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+</div>

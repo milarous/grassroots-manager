@@ -135,6 +135,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
+            text-align: left;
         }
         
         .load-slot-btn:hover {
@@ -144,6 +145,28 @@
         .load-slot-btn:disabled {
             background-color: #ccc;
             cursor: not-allowed;
+        }
+        
+        .slot-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        
+        .slot-label {
+            font-weight: bold;
+        }
+        
+        .slot-timestamp {
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .slot-club-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
         }
         
         footer {
@@ -169,9 +192,19 @@
         <div class="load-modal-content">
             <h3>Select Load Slot</h3>
             <div class="load-slot-buttons">
-                <button onclick="loadGame(1)" class="load-slot-btn" id="loadSlot1">Load Slot 1</button>
-                <button onclick="loadGame(2)" class="load-slot-btn" id="loadSlot2">Load Slot 2</button>
-                <button onclick="loadGame(3)" class="load-slot-btn" id="loadSlot3">Load Slot 3</button>
+                {% for slot, info in save_slots.items() %}
+                <button onclick="loadGame({{ slot }})" class="load-slot-btn" {% if not info.exists %}disabled{% endif %}>
+                    <div class="slot-info">
+                        <span class="slot-label">{% if info.exists %}{{ info.label }}{% else %}Slot {{ slot }} (Empty){% endif %}</span>
+                        {% if info.exists %}
+                        <span class="slot-timestamp">{{ info.timestamp }}</span>
+                        {% if info.club_info %}
+                        <span class="slot-club-info">{{ info.club_info.name }} • {{ info.club_info.city }}, {{ info.club_info.country }}</span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </button>
+                {% endfor %}
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                 <button onclick="closeLoadModal()" style="background-color: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Cancel</button>
@@ -224,10 +257,6 @@
         }
         
         function openLoadModal() {
-            // Update button states based on save slots
-            {% for slot, exists in save_slots.items() %}
-                document.getElementById('loadSlot{{ slot }}').disabled = {% if exists %}false{% else %}true{% endif %};
-            {% endfor %}
             document.getElementById('loadModal').classList.add('show');
         }
         

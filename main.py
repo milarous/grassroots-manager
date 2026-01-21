@@ -56,12 +56,15 @@ available_players = []
 if not os.path.exists('saves'):
     os.makedirs('saves')
 
-def save_game(slot):
+def save_game(slot, label=""):
     """Save the current game state to a slot"""
     global club, available_players
+    from datetime import datetime
     save_data = {
         'club': club,
-        'available_players': available_players
+        'available_players': available_players,
+        'label': label,
+        'timestamp': datetime.now().isoformat()
     }
     with open(f'saves/slot_{slot}.pkl', 'wb') as f:
         pickle.dump(save_data, f)
@@ -80,9 +83,54 @@ def load_game(slot):
 
 def get_save_slots():
     """Get status of all save slots"""
+    from datetime import datetime
     slots = {}
     for i in range(1, 4):
-        slots[i] = os.path.exists(f'saves/slot_{i}.pkl')
+        file_path = f'saves/slot_{i}.pkl'
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, 'rb') as f:
+                    save_data = pickle.load(f)
+                    label = save_data.get('label', f'Slot {i}')
+                    timestamp_str = save_data.get('timestamp', '')
+                    if timestamp_str:
+                        timestamp = datetime.fromisoformat(timestamp_str)
+                        formatted_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                    else:
+                        formatted_time = 'Unknown'
+                    
+                    # Get club info for display
+                    saved_club = save_data.get('club')
+                    club_info = None
+                    if saved_club:
+                        try:
+                            club_info = {
+                                'name': saved_club.name,
+                                'city': saved_club.city,
+                                'country': saved_club.country,
+                                'finances': saved_club.finances,
+                                'reputation': saved_club.reputation
+                            }
+                        except:
+                            # If there's an error accessing club attributes, set to None
+                            club_info = None
+                    
+                    slots[str(i)] = {
+                        'exists': True,
+                        'label': label,
+                        'timestamp': formatted_time,
+                        'club_info': club_info
+                    }
+            except Exception as e:
+                # If there's an error reading the file, treat as legacy save
+                slots[str(i)] = {
+                    'exists': True,
+                    'label': f'Slot {i} (Legacy Save)',
+                    'timestamp': 'Unknown',
+                    'club_info': None
+                }
+        else:
+            slots[str(i)] = {'exists': False, 'label': '', 'timestamp': '', 'club_info': None}
     return slots
 
 def generate_random_player():
@@ -126,11 +174,15 @@ def create_club():
 def club_overview():
     if club is None:
         return redirect(url_for('main_menu'))
-    return render_template('club.html', club=club)
+    save_slots = get_save_slots()
+    return render_template('club.html', club=club, save_slots=save_slots)
 
 @app.route('/squad')
 def squad_view():
-    return render_template('squad.html', club=club, available_players=available_players)
+    if club is None:
+        return redirect(url_for('main_menu'))
+    save_slots = get_save_slots()
+    return render_template('squad.html', club=club, available_players=available_players, save_slots=save_slots)
 
 @app.route('/scout_players')
 def scout_players_route():
@@ -149,16 +201,23 @@ def recruit_player(player_index):
 
 @app.route('/facilities')
 def facilities_view():
-    return render_template('facilities.html', club=club)
+    if club is None:
+        return redirect(url_for('main_menu'))
+    save_slots = get_save_slots()
+    return render_template('facilities.html', club=club, save_slots=save_slots)
 
 @app.route('/competitions')
 def competitions_view():
-    return render_template('competitions.html', club=club)
+    if club is None:
+        return redirect(url_for('main_menu'))
+    save_slots = get_save_slots()
+    return render_template('competitions.html', club=club, save_slots=save_slots)
 
-@app.route('/save_game/<int:slot>')
+@app.route('/save_game/<int:slot>', methods=['POST'])
 def save_game_route(slot):
     if 1 <= slot <= 3:
-        save_game(slot)
+        label = request.form.get('label', f'Slot {slot}')
+        save_game(slot, label)
     return redirect(request.referrer or url_for('main_menu'))
 
 @app.route('/load_game/<int:slot>')

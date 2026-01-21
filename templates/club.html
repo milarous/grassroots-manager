@@ -95,6 +95,35 @@
             background-color: #45a049;
         }
         
+        .slot-btn.selected {
+            background-color: #2196F3;
+            border: 2px solid #0b7dda;
+        }
+        
+        .slot-info-detail {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 13px;
+            text-align: left;
+            display: none;
+        }
+        
+        .slot-info-detail.show {
+            display: block;
+        }
+        
+        .slot-info-detail p {
+            margin: 5px 0;
+            color: #333;
+        }
+        
+        .slot-info-detail .label {
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
         .modal-buttons {
             display: flex;
             justify-content: flex-end;
@@ -191,41 +220,12 @@ Competition: {{ club.competition }}</div>
         <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
     </footer>
     
-    <!-- Save Game Modal -->
-    <div id="saveModal" class="modal">
-        <div class="modal-content">
-            <h3>Select Save Slot</h3>
-            <div class="slot-buttons">
-                <button onclick="saveGame(1)" class="slot-btn">Save to Slot 1</button>
-                <button onclick="saveGame(2)" class="slot-btn">Save to Slot 2</button>
-                <button onclick="saveGame(3)" class="slot-btn">Save to Slot 3</button>
-            </div>
-            <div class="modal-buttons">
-                <button onclick="closeSaveModal()" style="background-color: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <!-- Include the reusable save modal -->
+    {% include '_save_modal.html' %}
     
     <script>
-        function openSaveModal() {
-            document.getElementById('saveModal').classList.add('show');
-        }
-        
-        function closeSaveModal() {
-            document.getElementById('saveModal').classList.remove('show');
-        }
-        
-        function saveGame(slot) {
-            window.location.href = '/save_game/' + slot;
-        }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('saveModal');
-            if (event.target === modal) {
-                closeSaveModal();
-            }
-        }
+        const saveSlots = {{ save_slots | tojson }};
     </script>
+    <script src="/static/save_modal.js"></script>
 </body>
 </html>
