@@ -4,176 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grassroots Football Manager</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .menu-buttons { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        a, button { display: block; width: 200px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; border: none; cursor: pointer; font-size: 16px; box-sizing: border-box; }
-        a:hover, button:hover { background-color: #45a049; }
-        
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        
-        .modal.show {
-            display: block;
-        }
-        
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            border-radius: 5px;
-            width: 300px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .modal-content h2 {
-            margin-top: 0;
-            color: #333;
-        }
-        
-        .modal-content h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        .modal-buttons button {
-            flex: 1;
-            margin: 0;
-        }
-        
-        .modal-buttons .cancel {
-            background-color: #f44336;
-        }
-        
-        .modal-buttons .cancel:hover {
-            background-color: #da190b;
-        }
-        
-        .slot-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .slot-btn {
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        .slot-btn:hover:not(:disabled) {
-            background-color: #45a049;
-        }
-        
-        .slot-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            color: #999;
-        }
-        
-        /* Load Modal styles */
-        .load-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        
-        /* Load Modal styles - removed, now uses .modal class */
-        
-        .slot-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 5px;
-        }
-        
-        .slot-label {
-            font-weight: bold;
-        }
-        
-        .slot-timestamp {
-            font-size: 12px;
-            color: #ccc;
-        }
-        
-        .slot-club-info {
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
-        }
-        
-        footer {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #666;
-            font-size: 12px;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <h1>Grassroots Football Manager</h1>
-    <p style="font-size: 16px; color: #666; margin-top: -10px;">A grassroots-to-pro football club management sim</p>
+    <p class="subtitle">A grassroots-to-pro football club management sim</p>
     <div class="menu-buttons">
         <button onclick="openClubForm()">Create Club</button>
-        <button onclick="openLoadModal()" style="color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Load Game</button>
+        <button onclick="openLoadModal()">Load Game</button>
         <a href="/exit">Exit Game</a>
     </div>
     
@@ -181,7 +19,7 @@
     <div id="loadModal" class="modal">
         <div class="modal-content">
             <h3>Load Game</h3>
-            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Select a save to load</p>
+            <p class="modal-description">Select a save to load</p>
             
             <div id="slotSelectionStepLoad">
                 <div class="slot-buttons" id="slotButtonsContainerLoad">
@@ -189,16 +27,16 @@
                 </div>
             </div>
             
-            <div id="loadConfirmStep" style="display: none;">
-                <div id="selectedSlotInfoLoad" style="padding: 15px; background-color: #f0f0f0; border-radius: 4px; margin-bottom: 15px;">
+            <div id="loadConfirmStep" class="hidden">
+                <div id="selectedSlotInfoLoad" class="modal-info-box">
                     <!-- Selected slot info will be shown here -->
                 </div>
             </div>
             
             <div class="modal-buttons">
-                <button id="backBtnLoad" onclick="backToSlotSelectionLoad()" style="display: none; background-color: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Back</button>
-                <button id="confirmBtnLoad" onclick="confirmLoad()" style="display: none; background-color: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Load</button>
-                <button onclick="closeLoadModal()" style="background-color: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Cancel</button>
+                <button id="backBtnLoad" onclick="backToSlotSelectionLoad()" class="btn-back">Back</button>
+                <button id="confirmBtnLoad" onclick="confirmLoad()" class="btn-confirm">Load</button>
+                <button onclick="closeLoadModal()" class="btn-cancel">Cancel</button>
             </div>
         </div>
     </div>
@@ -289,10 +127,10 @@
             const slotData = saveSlots[slot.toString()];
             
             // Update UI to show confirm step
-            document.getElementById('slotSelectionStepLoad').style.display = 'none';
-            document.getElementById('loadConfirmStep').style.display = 'block';
-            document.getElementById('backBtnLoad').style.display = 'inline-block';
-            document.getElementById('confirmBtnLoad').style.display = 'inline-block';
+            document.getElementById('slotSelectionStepLoad').classList.add('hidden');
+            document.getElementById('loadConfirmStep').classList.remove('hidden');
+            document.getElementById('backBtnLoad').classList.remove('hidden');
+            document.getElementById('confirmBtnLoad').classList.remove('hidden');
             
             // Show selected slot details
             let infoHtml = `<strong>Loading from Slot ${slot}</strong><br><br>`;
@@ -311,10 +149,10 @@
         }
         
         function backToSlotSelectionLoad() {
-            document.getElementById('slotSelectionStepLoad').style.display = 'block';
-            document.getElementById('loadConfirmStep').style.display = 'none';
-            document.getElementById('backBtnLoad').style.display = 'none';
-            document.getElementById('confirmBtnLoad').style.display = 'none';
+            document.getElementById('slotSelectionStepLoad').classList.remove('hidden');
+            document.getElementById('loadConfirmStep').classList.add('hidden');
+            document.getElementById('backBtnLoad').classList.add('hidden');
+            document.getElementById('confirmBtnLoad').classList.add('hidden');
             window.selectedLoadSlot = null;
         }
         
