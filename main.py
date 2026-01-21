@@ -226,6 +226,14 @@ def load_game_route(slot):
         return redirect(url_for('club_overview'))
     return redirect(url_for('main_menu'))
 
+@app.route('/delete_game/<int:slot>')
+def delete_game_route(slot):
+    if 1 <= slot <= 3:
+        file_path = f'saves/slot_{slot}.pkl'
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    return redirect(request.referrer or url_for('main_menu'))
+
 @app.route('/exit')
 def exit_game():
     return render_template('exit.html')

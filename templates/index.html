@@ -14,7 +14,7 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 1;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
@@ -32,11 +32,16 @@
             padding: 20px;
             border: 1px solid #888;
             border-radius: 5px;
-            width: 400px;
+            width: 300px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .modal-content h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .modal-content h3 {
             margin-top: 0;
             color: #333;
         }
@@ -90,6 +95,34 @@
             background-color: #da190b;
         }
         
+        .slot-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .slot-btn {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .slot-btn:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        
+        .slot-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            color: #999;
+        }
+        
         /* Load Modal styles */
         .load-modal {
             display: none;
@@ -102,50 +135,7 @@
             background-color: rgba(0, 0, 0, 0.5);
         }
         
-        .load-modal.show {
-            display: block;
-        }
-        
-        .load-modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            border-radius: 5px;
-            width: 300px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .load-modal-content h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        
-        .load-slot-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .load-slot-btn {
-            padding: 10px;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            text-align: left;
-        }
-        
-        .load-slot-btn:hover {
-            background-color: #0b7dda;
-        }
-        
-        .load-slot-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+        /* Load Modal styles - removed, now uses .modal class */
         
         .slot-info {
             display: flex;
@@ -188,25 +178,26 @@
     </div>
     
     <!-- Load Game Modal -->
-    <div id="loadModal" class="load-modal">
-        <div class="load-modal-content">
-            <h3>Select Load Slot</h3>
-            <div class="load-slot-buttons">
-                {% for slot, info in save_slots.items() %}
-                <button onclick="loadGame({{ slot }})" class="load-slot-btn" {% if not info.exists %}disabled{% endif %}>
-                    <div class="slot-info">
-                        <span class="slot-label">{% if info.exists %}{{ info.label }}{% else %}Slot {{ slot }} (Empty){% endif %}</span>
-                        {% if info.exists %}
-                        <span class="slot-timestamp">{{ info.timestamp }}</span>
-                        {% if info.club_info %}
-                        <span class="slot-club-info">{{ info.club_info.name }} • {{ info.club_info.city }}, {{ info.club_info.country }}</span>
-                        {% endif %}
-                        {% endif %}
-                    </div>
-                </button>
-                {% endfor %}
+    <div id="loadModal" class="modal">
+        <div class="modal-content">
+            <h3>Load Game</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Select a save to load</p>
+            
+            <div id="slotSelectionStepLoad">
+                <div class="slot-buttons" id="slotButtonsContainerLoad">
+                    <!-- Slots will be populated via JavaScript -->
+                </div>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            
+            <div id="loadConfirmStep" style="display: none;">
+                <div id="selectedSlotInfoLoad" style="padding: 15px; background-color: #f0f0f0; border-radius: 4px; margin-bottom: 15px;">
+                    <!-- Selected slot info will be shown here -->
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button id="backBtnLoad" onclick="backToSlotSelectionLoad()" style="display: none; background-color: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Back</button>
+                <button id="confirmBtnLoad" onclick="confirmLoad()" style="display: none; background-color: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Load</button>
                 <button onclick="closeLoadModal()" style="background-color: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Cancel</button>
             </div>
         </div>
@@ -247,6 +238,8 @@
     </div>
     
     <script>
+        const saveSlots = {{ save_slots | tojson }};
+        
         function openClubForm() {
             document.getElementById('clubFormModal').classList.add('show');
         }
@@ -257,6 +250,8 @@
         }
         
         function openLoadModal() {
+            initializeLoadModal();
+            backToSlotSelectionLoad();
             document.getElementById('loadModal').classList.add('show');
         }
         
@@ -264,8 +259,71 @@
             document.getElementById('loadModal').classList.remove('show');
         }
         
-        function loadGame(slot) {
-            window.location.href = '/load_game/' + slot;
+        function initializeLoadModal() {
+            const container = document.getElementById('slotButtonsContainerLoad');
+            if (!container || !saveSlots) return;
+            
+            container.innerHTML = '';
+            
+            for (let slot = 1; slot <= 3; slot++) {
+                const slotData = saveSlots[slot.toString()];
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'slot-btn';
+                button.onclick = () => selectSlotLoad(slot);
+                
+                let buttonText = `Slot ${slot}`;
+                if (slotData.exists) {
+                    buttonText += ` - ${slotData.label}`;
+                } else {
+                    buttonText += ' (Empty)';
+                    button.disabled = true;
+                }
+                
+                button.innerHTML = buttonText;
+                container.appendChild(button);
+            }
+        }
+        
+        function selectSlotLoad(slot) {
+            const slotData = saveSlots[slot.toString()];
+            
+            // Update UI to show confirm step
+            document.getElementById('slotSelectionStepLoad').style.display = 'none';
+            document.getElementById('loadConfirmStep').style.display = 'block';
+            document.getElementById('backBtnLoad').style.display = 'inline-block';
+            document.getElementById('confirmBtnLoad').style.display = 'inline-block';
+            
+            // Show selected slot details
+            let infoHtml = `<strong>Loading from Slot ${slot}</strong><br><br>`;
+            infoHtml += `<strong>Save Details:</strong><br>`;
+            infoHtml += `Label: ${slotData.label}<br>`;
+            infoHtml += `Date: ${slotData.timestamp}<br>`;
+            if (slotData.club_info) {
+                infoHtml += `<br>Club: ${slotData.club_info.name}<br>`;
+                infoHtml += `Location: ${slotData.club_info.city}, ${slotData.club_info.country}<br>`;
+                infoHtml += `Finances: $${slotData.club_info.finances}<br>`;
+                infoHtml += `Reputation: ${slotData.club_info.reputation}`;
+            }
+            
+            document.getElementById('selectedSlotInfoLoad').innerHTML = infoHtml;
+            window.selectedLoadSlot = slot;
+        }
+        
+        function backToSlotSelectionLoad() {
+            document.getElementById('slotSelectionStepLoad').style.display = 'block';
+            document.getElementById('loadConfirmStep').style.display = 'none';
+            document.getElementById('backBtnLoad').style.display = 'none';
+            document.getElementById('confirmBtnLoad').style.display = 'none';
+            window.selectedLoadSlot = null;
+        }
+        
+        function confirmLoad() {
+            if (window.selectedLoadSlot === null) {
+                alert('Please select a slot first');
+                return;
+            }
+            window.location.href = '/load_game/' + window.selectedLoadSlot;
         }
         
         // Close modal when clicking outside of it
