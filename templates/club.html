@@ -208,7 +208,7 @@ City: {{ club.city }}
 Country: {{ club.country }}
 Finances: ${{ club.finances }}
 Reputation: {{ club.reputation }}
-Facilities: {{ club.facilities }}
+Facilities: {% if club.facility %}{{ club.facility.name }} (${{ club.facility.monthly_cost }}/month){% else %}None{% endif %}
 Competition: {{ club.competition }}</div>
             {% else %}
             <p>No club created yet. Please start a new season.</p>

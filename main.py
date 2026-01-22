@@ -14,7 +14,7 @@ class Club:
         self.finances = 1000       # starting money
         self.reputation = 1        # starts as unknown
         self.squad = []            # will add later
-        self.facilities = "None"
+        self.facility = None       # Current rented facility
         self.competition = "None"
 
     def get_summary(self):
@@ -41,6 +41,16 @@ class Player:
         return f"{self.name} ({self.age}, {self.position}, Skill: {self.skill_level})"
 
 
+class Facility:
+    def __init__(self, name, city, monthly_cost):
+        self.name = name
+        self.city = city
+        self.monthly_cost = monthly_cost
+
+    def __str__(self):
+        return f"{self.name} ({self.city}) - ${self.monthly_cost}/month"
+
+
 # -----------------------------
 # Flask Web Application
 # -----------------------------
@@ -51,6 +61,14 @@ club = None
 
 # Available players for recruitment
 available_players = []
+
+# Adelaide facilities available for rent
+adelaide_facilities = [
+    Facility("Hackham Soccer Complex", "Hackham", 800),
+    Facility("Findon Sports Park", "Findon", 1200),
+    Facility("Salisbury Sports Ground", "Salisbury", 950),
+    Facility("Campbelltown Football Ground", "Campbelltown", 1100)
+]
 
 # Create saves directory if it doesn't exist
 if not os.path.exists('saves'):
@@ -104,12 +122,20 @@ def get_save_slots():
                     club_info = None
                     if saved_club:
                         try:
+                            facility_info = None
+                            if saved_club.facility:
+                                facility_info = {
+                                    'name': saved_club.facility.name,
+                                    'city': saved_club.facility.city,
+                                    'monthly_cost': saved_club.facility.monthly_cost
+                                }
                             club_info = {
                                 'name': saved_club.name,
                                 'city': saved_club.city,
                                 'country': saved_club.country,
                                 'finances': saved_club.finances,
-                                'reputation': saved_club.reputation
+                                'reputation': saved_club.reputation,
+                                'facility': facility_info
                             }
                         except:
                             # If there's an error accessing club attributes, set to None
@@ -204,7 +230,15 @@ def facilities_view():
     if club is None:
         return redirect(url_for('main_menu'))
     save_slots = get_save_slots()
-    return render_template('facilities.html', club=club, save_slots=save_slots)
+    return render_template('facilities.html', club=club, save_slots=save_slots, facilities=adelaide_facilities)
+
+@app.route('/rent_facility/<int:facility_index>')
+def rent_facility(facility_index):
+    if club is None:
+        return redirect(url_for('main_menu'))
+    if 0 <= facility_index < len(adelaide_facilities):
+        club.facility = adelaide_facilities[facility_index]
+    return redirect(url_for('facilities_view'))
 
 @app.route('/competitions')
 def competitions_view():

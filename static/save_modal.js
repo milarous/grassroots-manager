@@ -48,7 +48,12 @@ function selectSlot(slot) {
             infoHtml += `Club: ${slotData.club_info.name}<br>`;
             infoHtml += `Location: ${slotData.club_info.city}, ${slotData.club_info.country}<br>`;
             infoHtml += `Finances: $${slotData.club_info.finances}<br>`;
-            infoHtml += `Reputation: ${slotData.club_info.reputation}`;
+            infoHtml += `Reputation: ${slotData.club_info.reputation}<br>`;
+            if (slotData.club_info.facility) {
+                infoHtml += `Facility: ${slotData.club_info.facility.name} ($${slotData.club_info.facility.monthly_cost}/month)`;
+            } else {
+                infoHtml += `Facility: None`;
+            }
         }
     }
     
