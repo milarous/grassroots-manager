@@ -32,10 +32,10 @@ function selectSlot(slot) {
     const slotData = saveSlots[slot.toString()];
     
     // Update UI to show label/confirm step
-    document.getElementById('slotSelectionStep').style.display = 'none';
-    document.getElementById('labelConfirmStep').style.display = 'block';
-    document.getElementById('backBtn').style.display = 'inline-block';
-    document.getElementById('confirmBtn').style.display = 'inline-block';
+    document.getElementById('slotSelectionStep').classList.add('hidden');
+    document.getElementById('labelConfirmStep').classList.remove('hidden');
+    document.getElementById('backBtn').classList.remove('hidden');
+    document.getElementById('confirmBtn').classList.remove('hidden');
     
     // Show selected slot details
     let infoHtml = `<strong>${slotData.exists ? 'Overwriting' : 'Creating new save in'} Slot ${slot}</strong><br>`;
@@ -64,10 +64,10 @@ function selectSlot(slot) {
 
 function backToSlotSelection() {
     selectedSlot = null;
-    document.getElementById('slotSelectionStep').style.display = 'block';
-    document.getElementById('labelConfirmStep').style.display = 'none';
-    document.getElementById('backBtn').style.display = 'none';
-    document.getElementById('confirmBtn').style.display = 'none';
+    document.getElementById('slotSelectionStep').classList.remove('hidden');
+    document.getElementById('labelConfirmStep').classList.add('hidden');
+    document.getElementById('backBtn').classList.add('hidden');
+    document.getElementById('confirmBtn').classList.add('hidden');
 }
 
 function openSaveModal() {
