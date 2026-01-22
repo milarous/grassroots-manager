@@ -31,7 +31,10 @@
                     <p><strong>Location:</strong> {{ club.facility.city }}</p>
                     <p><strong>Monthly Hire Cost:</strong> ${{ club.facility.monthly_cost }}</p>
                 </div>
-                <button onclick="toggleFacilitySearch()" class="menu-button" style="margin-top: 20px;">Search for New Facility</button>
+                <div class="action-row">
+                    <button onclick="toggleFacilitySearch()" class="menu-button">Search for New Facility</button>
+                    <a href="/leave_facility" class="menu-button danger">Leave Facility</a>
+                </div>
                 <div id="facilitySearch" style="display: none; margin-top: 20px;">
                     <h3>Available Facilities in Adelaide</h3>
                     <div class="facilities-grid">

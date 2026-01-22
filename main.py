@@ -15,7 +15,7 @@ class Club:
         self.reputation = 1        # starts as unknown
         self.squad = []            # will add later
         self.facility = None       # Current rented facility
-        self.competition = "None"
+        self.competition = None    # Current entered competition
 
     def get_summary(self):
         return (
@@ -51,6 +51,15 @@ class Facility:
         return f"{self.name} ({self.city}) - ${self.monthly_cost}/month"
 
 
+class Competition:
+    def __init__(self, name, yearly_fee):
+        self.name = name
+        self.yearly_fee = yearly_fee
+
+    def __str__(self):
+        return f"{self.name} - ${self.yearly_fee}/year"
+
+
 # -----------------------------
 # Flask Web Application
 # -----------------------------
@@ -68,6 +77,14 @@ adelaide_facilities = [
     Facility("Findon Sports Park", "Findon", 1200),
     Facility("Salisbury Sports Ground", "Salisbury", 950),
     Facility("Campbelltown Football Ground", "Campbelltown", 1100)
+]
+
+# South Australian grassroots competitions
+competitions = [
+    Competition("Southern Districts Soccer Association", 650),
+    Competition("Elizabeth & Districts Soccer Association", 600),
+    Competition("Adelaide Hills Football Association", 550),
+    Competition("Western Football League", 500)
 ]
 
 # Create saves directory if it doesn't exist
@@ -95,6 +112,9 @@ def load_game(slot):
             save_data = pickle.load(f)
             club = save_data['club']
             available_players = save_data['available_players']
+            # Ensure legacy saves without Competition objects reset to None
+            if club and not isinstance(getattr(club, 'competition', None), Competition):
+                club.competition = None
         return True
     except FileNotFoundError:
         return False
@@ -240,12 +260,40 @@ def rent_facility(facility_index):
         club.facility = adelaide_facilities[facility_index]
     return redirect(url_for('facilities_view'))
 
+
+@app.route('/leave_facility')
+def leave_facility():
+    if club is None:
+        return redirect(url_for('main_menu'))
+    club.facility = None
+    return redirect(url_for('facilities_view'))
+
 @app.route('/competitions')
 def competitions_view():
     if club is None:
         return redirect(url_for('main_menu'))
+    current_comp = club.competition if isinstance(club.competition, Competition) else None
+    if club.competition is not current_comp:
+        club.competition = current_comp
     save_slots = get_save_slots()
-    return render_template('competitions.html', club=club, save_slots=save_slots)
+    return render_template('competitions.html', club=club, save_slots=save_slots, competitions=competitions, current_competition=current_comp)
+
+
+@app.route('/enter_competition/<int:competition_index>')
+def enter_competition(competition_index):
+    if club is None:
+        return redirect(url_for('main_menu'))
+    if 0 <= competition_index < len(competitions):
+        club.competition = competitions[competition_index]
+    return redirect(url_for('competitions_view'))
+
+
+@app.route('/leave_competition')
+def leave_competition():
+    if club is None:
+        return redirect(url_for('main_menu'))
+    club.competition = None
+    return redirect(url_for('competitions_view'))
 
 @app.route('/save_game/<int:slot>', methods=['POST'])
 def save_game_route(slot):

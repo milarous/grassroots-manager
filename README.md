@@ -3,18 +3,48 @@
 A web-based football management simulation game built with Flask. Manage your grassroots football club from the ground up, starting with basic finances and reputation, and build your squad and facilities. Features a modern UI with modal dialogs, interactive save/load system, and responsive navigation.
 
 ## Features
+- **Screenshots**
+
+   Main Menu
+  
+   ![Main Menu](docs/screenshots/main-menu.svg)
+
+   Facilities (No Facility)
+  
+   ![Facilities - No Facility](docs/screenshots/facilities-empty.svg)
+
+   Facilities (With Facility + Actions)
+  
+   ![Facilities - Current](docs/screenshots/facilities-current.svg)
+
+   Competitions (No Current Competition)
+  
+   ![Competitions - No Current](docs/screenshots/competitions-empty.svg)
+
+   Competitions (Current + Actions)
+  
+   ![Competitions - Current](docs/screenshots/competitions-current.svg)
+
 
 ### Core Gameplay
 - **Club Creation**: Create and customize your football club with name, city, and country selection
-- **Club Management**: View club overview including finances, reputation, and facilities
+- **Club Management**: View club overview including finances, reputation, facility, and competition
 - **Squad Management**: Scout and recruit senior players to build your squad with detailed player information (name, age, position, skill level)
-- **Facility Rental System**: Start without a facility and rent one from 4 available options in Adelaide:
-  - Hackham Soccer Complex ($800/month)
-  - Findon Sports Park ($1,200/month)
-  - Salisbury Sports Ground ($950/month)
-  - Campbelltown Football Ground ($1,100/month)
-- **Switch Facilities**: Search for and switch to a different facility at any time
-- **Competitions View**: Track available competitions (basic view)
+- **Facilities**:
+   - Start with no facility and rent one of 4 options in Adelaide:
+      - Hackham Soccer Complex ($800/month)
+      - Findon Sports Park ($1,200/month)
+      - Salisbury Sports Ground ($950/month)
+      - Campbelltown Football Ground ($1,100/month)
+   - View your current facility details; search to change facilities
+   - Leave a facility at any time with the red “Leave Facility” button
+- **Competitions**:
+   - Start with no competition; choose from these associations (annual fee):
+      - Southern Districts Soccer Association ($650/year)
+      - Elizabeth & Districts Soccer Association ($600/year)
+      - Adelaide Hills Football Association ($550/year)
+      - Western Football League ($500/year)
+   - Enter a competition, view its details, change competitions, or use the red “Leave Competition” button
 
 ### Save System
 - **3 Save Slots**: Save your game progress in up to 3 different slots
@@ -22,7 +52,7 @@ A web-based football management simulation game built with Flask. Manage your gr
 - **Save Information**: View timestamps, club details, and facility information for each save
 - **Load/Delete**: Load previous games or delete old saves
 - **Modal Interface**: User-friendly modal dialogs for saving and loading
-- **Facility Persistence**: Facility data is automatically saved and restored
+- **Persistence**: Facility and competition selections are saved with your club and restored on load
 
 ### User Interface
 - **Modern Web Interface**: Clean, responsive HTML/CSS design
@@ -73,7 +103,7 @@ Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game
      - **Club Overview**: View finances, reputation, facility, and club details
      - **View Squad**: Manage your players
      - **View Facilities**: Rent and manage your club facilities
-     - **View Competitions**: View available competitions
+       - **View Competitions**: Enter, view, change, or leave competitions
    - Click "Return to Main Menu" to go back to the main menu
 
 4. **Squad Management**:
@@ -83,18 +113,25 @@ Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game
 
 5. **Facilities Management**:
    - If you don't have a facility yet, browse and select one of the 4 available facilities in Adelaide to rent
-   - Once you have rented a facility, the page shows your current facility details (name, location, monthly cost)
-   - Click "Search for New Facility" to view other facilities and potentially switch to a different one
+   - Once you have a facility, the page shows your current facility details (name, location, monthly cost)
+   - Use “Search for New Facility” to view options and switch
+   - Use “Leave Facility” (red) to revert back to no facility
    - The current facility is highlighted with a green badge and checkmark
 
-6. **Saving Your Game**:
+6. **Competitions Management**:
+   - If you have no current competition, the page shows “No Current Competition” and lists the available associations
+   - Click “Enter Competition” to join one; the current competition details will display
+   - Click “Change Competition” to show all options (the current one is marked “Current Competition”)
+   - Click “Leave Competition” (red) to revert back to no competition
+
+7. **Saving Your Game**:
    - Click the "Save Game" button on any game page
    - Select one of the 3 available save slots
    - Enter a custom label for your save (e.g., "My First Club")
    - Click "Confirm" to save
    - Existing saves show their label, timestamp, club information, and facility details
 
-7. **Loading a Game**:
+8. **Loading a Game**:
    - From the main menu, click "Load Game"
    - Select a save slot to view its details
    - Click "Load" to continue from that save

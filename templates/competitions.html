@@ -24,7 +24,49 @@
         </div>
         
         <div class="right-content">
-            <p>No competitions yet! Join some soon...</p>
+            {% if current_competition %}
+                <h2>Current Competition</h2>
+                <div class="facility-details">
+                    <p><strong>Name:</strong> {{ current_competition.name }}</p>
+                    <p><strong>Yearly Association Fee:</strong> ${{ current_competition.yearly_fee }}</p>
+                </div>
+                <div class="action-row">
+                    <button onclick="toggleCompetitionSearch()" class="menu-button">Change Competition</button>
+                    <a href="/leave_competition" class="menu-button danger">Leave Competition</a>
+                </div>
+                <div id="competitionSearch" style="display: none; margin-top: 20px;">
+                    <h3>Available Competitions</h3>
+                    <div class="facilities-grid">
+                        {% for competition in competitions %}
+                            {% if current_competition and competition.name == current_competition.name %}
+                                <div class="facility-card current">
+                                    <h4>{{ competition.name }}</h4>
+                                    <p><strong>Yearly Fee:</strong> ${{ competition.yearly_fee }}</p>
+                                    <div class="current-facility-badge">✓ Current Competition</div>
+                                </div>
+                            {% else %}
+                                <div class="facility-card">
+                                    <h4>{{ competition.name }}</h4>
+                                    <p><strong>Yearly Fee:</strong> ${{ competition.yearly_fee }}</p>
+                                    <a href="/enter_competition/{{ loop.index0 }}" class="rent-btn">Enter Competition</a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <h2>No Current Competition</h2>
+                <p>Your club has not entered a competition yet. Select one to join:</p>
+                <div class="facilities-grid">
+                    {% for competition in competitions %}
+                        <div class="facility-card">
+                            <h4>{{ competition.name }}</h4>
+                            <p><strong>Yearly Fee:</strong> ${{ competition.yearly_fee }}</p>
+                            <a href="/enter_competition/{{ loop.index0 }}" class="rent-btn">Enter Competition</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     </div>
     
@@ -37,6 +79,12 @@
     
     <script>
         const saveSlots = {{ save_slots | tojson }};
+        function toggleCompetitionSearch() {
+            const searchDiv = document.getElementById('competitionSearch');
+            if (searchDiv) {
+                searchDiv.style.display = searchDiv.style.display === 'none' ? 'block' : 'none';
+            }
+        }
     </script>
     <script src="/static/save_modal.js"></script>
 </body>
