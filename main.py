@@ -16,6 +16,8 @@ class Club:
         self.squad = []            # will add later
         self.facility = None       # Current rented facility
         self.competition = None    # Current entered competition
+        self.week = 1              # Current game week
+        self.year = 2026           # Current game year
 
     def get_summary(self):
         return (
@@ -115,6 +117,11 @@ def load_game(slot):
             # Ensure legacy saves without Competition objects reset to None
             if club and not isinstance(getattr(club, 'competition', None), Competition):
                 club.competition = None
+            # Ensure legacy saves have week and year attributes
+            if club and not hasattr(club, 'week'):
+                club.week = 1
+            if club and not hasattr(club, 'year'):
+                club.year = 2026
         return True
     except FileNotFoundError:
         return False
@@ -140,8 +147,14 @@ def get_save_slots():
                     # Get club info for display
                     saved_club = save_data.get('club')
                     club_info = None
+                    game_date = 'Unknown'
                     if saved_club:
                         try:
+                            # Get game date
+                            week = getattr(saved_club, 'week', 1)
+                            year = getattr(saved_club, 'year', 2026)
+                            game_date = f"Week {week}, {year}"
+                            
                             facility_info = None
                             if saved_club.facility:
                                 facility_info = {
@@ -165,6 +178,7 @@ def get_save_slots():
                         'exists': True,
                         'label': label,
                         'timestamp': formatted_time,
+                        'game_date': game_date,
                         'club_info': club_info
                     }
             except Exception as e:
@@ -173,10 +187,11 @@ def get_save_slots():
                     'exists': True,
                     'label': f'Slot {i} (Legacy Save)',
                     'timestamp': 'Unknown',
+                    'game_date': 'Unknown',
                     'club_info': None
                 }
         else:
-            slots[str(i)] = {'exists': False, 'label': '', 'timestamp': '', 'club_info': None}
+            slots[str(i)] = {'exists': False, 'label': '', 'timestamp': '', 'game_date': '', 'club_info': None}
     return slots
 
 def generate_random_player():
@@ -294,6 +309,17 @@ def leave_competition():
         return redirect(url_for('main_menu'))
     club.competition = None
     return redirect(url_for('competitions_view'))
+
+@app.route('/next_week')
+def next_week():
+    if club is None:
+        return redirect(url_for('main_menu'))
+    club.week += 1
+    if club.week > 52:
+        club.week = 1
+        club.year += 1
+    referrer = request.referrer if request.referrer else url_for('club_overview', _external=True)
+    return redirect(referrer)
 
 @app.route('/save_game/<int:slot>', methods=['POST'])
 def save_game_route(slot):

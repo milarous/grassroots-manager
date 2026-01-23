@@ -7,12 +7,25 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+    <a href="/next_week" class="next-week-btn">Next Week</a>
+
+    <div class="burger-menu">
+        <button id="burgerBtn" class="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="burgerDropdown" class="burger-dropdown">
+            <button onclick="openSaveModal()">Save Game</button>
+            <a href="/">Return to Main Menu</a>
+        </div>
+    </div>
+
     <div class="header">
         <h1>Squad List</h1>
-        <div class="header-buttons">
-            <button onclick="openSaveModal()" class="save-btn">Save Game</button>
-            <a href="/" class="return-btn">Return to Main Menu</a>
-        </div>
+        {% if club %}
+        <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
+        {% endif %}
     </div>
     
     <div class="container">
@@ -60,6 +73,7 @@
     <!-- Include the reusable save modal -->
     {% include '_save_modal.html' %}
     
+    <script src="/static/burger_menu.js"></script>
     <script>
         const saveSlots = {{ save_slots | tojson }};
     </script>

@@ -1,0 +1,28 @@
+<!-- Load Game Modal - Include this in any page that needs load functionality -->
+<!-- Requires: save_slots variable to be passed from Flask -->
+<!-- Requires: static/load_modal.js to be included in the page -->
+
+<div id="loadModal" class="modal">
+    <div class="modal-content">
+        <h3>Load Game</h3>
+        <p class="modal-description">Select a save to load</p>
+        
+        <div id="slotSelectionStepLoad">
+            <div class="slot-buttons" id="slotButtonsContainerLoad">
+                <!-- Slots will be populated via JavaScript -->
+            </div>
+        </div>
+        
+        <div id="loadConfirmStep" class="hidden">
+            <div id="selectedSlotInfoLoad" class="modal-info-box">
+                <!-- Selected slot info will be shown here -->
+            </div>
+        </div>
+        
+        <div class="modal-buttons">
+            <button id="backBtnLoad" onclick="backToSlotSelectionLoad()" class="btn-back hidden">Back</button>
+            <button id="confirmBtnLoad" onclick="confirmLoad()" class="btn-confirm hidden">Load</button>
+            <button onclick="closeLoadModal()" class="btn-cancel">Cancel</button>
+        </div>
+    </div>
+</div>

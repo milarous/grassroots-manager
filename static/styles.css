@@ -13,8 +13,16 @@ body {
     position: relative;
 }
 
-/* Button styles */
-a, button { 
+/* Menu buttons container */
+.menu-buttons { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 15px; 
+}
+
+.menu-buttons a,
+.menu-buttons button {
     display: block; 
     width: 200px; 
     padding: 10px 20px; 
@@ -25,48 +33,13 @@ a, button {
     border: none; 
     cursor: pointer; 
     font-size: 16px; 
-    box-sizing: border-box; 
+    font-weight: bold; 
+    box-sizing: border-box;
 }
 
-a:hover, button:hover { 
-    background-color: #45a049; 
-}
-
-/* Menu buttons container */
-.menu-buttons { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 15px; 
-}
-
-/* Return button */
-.return-btn {
-    padding: 10px 20px;
-    background-color: #2196F3;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-}
-
-.return-btn:hover {
-    background-color: #0b7dda;
-}
-
-/* Save button */
-.save-btn {
-    padding: 10px 20px;
-    background-color: #f44336;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.save-btn:hover {
-    background-color: #d32f2f;
+.menu-buttons a:hover,
+.menu-buttons button:hover {
+    background-color: #45a049;
 }
 
 /* Modal styles */
@@ -146,6 +119,17 @@ a:hover, button:hover {
 .modal-buttons button {
     flex: 1;
     margin: 0;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.modal-buttons button:hover {
+    background-color: #45a049;
 }
 
 .modal-buttons .cancel {
@@ -171,6 +155,7 @@ a:hover, button:hover {
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: bold;
     width: 100%;
     box-sizing: border-box;
 }
@@ -262,6 +247,7 @@ a:hover, button:hover {
     cursor: pointer;
     border: none;
     font-size: 14px;
+    font-weight: bold;
     box-sizing: border-box;
     line-height: 1.5;
 }
@@ -346,6 +332,7 @@ footer {
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .btn-confirm {
@@ -355,6 +342,7 @@ footer {
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .btn-cancel {
@@ -364,10 +352,126 @@ footer {
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .hidden {
     display: none;
+}
+
+/* Burger menu styles */
+.burger-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+}
+
+/* Next week button */
+.next-week-btn {
+    position: fixed;
+    top: 20px;
+    right: 80px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 0 12px;
+    height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 1999;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    white-space: nowrap;
+    width: auto;
+}
+
+.next-week-btn:hover {
+    background-color: #d32f2f;
+}
+
+.burger-btn {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    transition: background-color 0.2s;
+}
+
+.burger-btn:hover {
+    background-color: #0b7dda;
+}
+
+.burger-btn span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: white;
+}
+
+.burger-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    min-width: 180px;
+    display: none;
+    flex-direction: column;
+    z-index: 2001;
+}
+
+.burger-dropdown.show {
+    display: flex;
+}
+
+.burger-dropdown a,
+.burger-dropdown button {
+    display: block !important;
+    width: 100% !important;
+    padding: 12px 16px !important;
+    background-color: transparent !important;
+    color: #333 !important;
+    text-decoration: none;
+    border: none !important;
+    border-radius: 0 !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    text-align: left !important;
+    box-sizing: border-box;
+    margin: 0 !important;
+    transition: background-color 0.2s;
+}
+
+.burger-dropdown a:hover,
+.burger-dropdown button:hover {
+    background-color: #f0f0f0 !important;
+}
+
+.burger-dropdown a:first-child,
+.burger-dropdown button:first-child {
+    border-radius: 4px 4px 0 0;
+}
+
+.burger-dropdown a:last-child,
+.burger-dropdown button:last-child {
+    border-radius: 0 0 4px 4px;
 }
 
 /* Header button container */
@@ -385,6 +489,14 @@ footer {
     font-size: 16px;
     color: #666;
     margin-top: -10px;
+}
+
+/* Game date display */
+.game-date {
+    font-size: 18px;
+    color: #333;
+    margin: 10px 0 20px 0;
+    font-weight: bold;
 }
 
 /* Active menu button (current page) */
@@ -427,6 +539,7 @@ footer {
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
+    display: block;
 }
 
 .facility-card:hover {
@@ -447,6 +560,7 @@ footer {
 
 .rent-btn {
     display: inline-block;
+    width: auto;
     margin-top: 15px;
     padding: 10px 20px;
     background-color: #4CAF50;
@@ -456,6 +570,7 @@ footer {
     border: none;
     cursor: pointer;
     font-size: 14px;
+    font-weight: bold;
     transition: background-color 0.2s;
 }
 
@@ -505,6 +620,8 @@ footer {
 
 .action-row .menu-button {
     flex: 1;
+    width: auto;
+    margin-bottom: 0;
 }
 
 .menu-button.danger {

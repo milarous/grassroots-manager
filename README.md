@@ -3,28 +3,6 @@
 A web-based football management simulation game built with Flask. Manage your grassroots football club from the ground up, starting with basic finances and reputation, and build your squad and facilities. Features a modern UI with modal dialogs, interactive save/load system, and responsive navigation.
 
 ## Features
-- **Screenshots**
-
-   Main Menu
-  
-   ![Main Menu](docs/screenshots/main-menu.svg)
-
-   Facilities (No Facility)
-  
-   ![Facilities - No Facility](docs/screenshots/facilities-empty.svg)
-
-   Facilities (With Facility + Actions)
-  
-   ![Facilities - Current](docs/screenshots/facilities-current.svg)
-
-   Competitions (No Current Competition)
-  
-   ![Competitions - No Current](docs/screenshots/competitions-empty.svg)
-
-   Competitions (Current + Actions)
-  
-   ![Competitions - Current](docs/screenshots/competitions-current.svg)
-
 
 ### Core Gameplay
 - **Club Creation**: Create and customize your football club with name, city, and country selection
@@ -45,18 +23,20 @@ A web-based football management simulation game built with Flask. Manage your gr
       - Adelaide Hills Football Association ($550/year)
       - Western Football League ($500/year)
    - Enter a competition, view its details, change competitions, or use the red “Leave Competition” button
+- **Time Progression**: Advance the season with the top-right "Next Week" button; week/year are shown under Club Overview and stored in save data
 
 ### Save System
 - **3 Save Slots**: Save your game progress in up to 3 different slots
 - **Custom Labels**: Add custom labels to your saves for easy identification
-- **Save Information**: View timestamps, club details, and facility information for each save
+- **Save Information**: View game progress (Week/Year), save timestamp, club details, and facility information for each save
 - **Load/Delete**: Load previous games or delete old saves
-- **Modal Interface**: User-friendly modal dialogs for saving and loading
+- **Modal Interface**: User-friendly, reusable save and load modals available across pages
 - **Persistence**: Facility and competition selections are saved with your club and restored on load
 
 ### User Interface
 - **Modern Web Interface**: Clean, responsive HTML/CSS design
 - **Navigation Menu**: Easy-to-use left-side navigation menu on all game pages
+- **Top-Right Controls**: Red "Next Week" button and blue burger menu housing Save Game and Return to Main Menu
 - **Interactive Modals**: Modal dialogs for club creation, saving, and loading
 - **Visual Feedback**: Button states, hover effects, and active page indicators
 - **Footer Branding**: Consistent footer with copyright and version information
@@ -103,8 +83,8 @@ Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game
      - **Club Overview**: View finances, reputation, facility, and club details
      - **View Squad**: Manage your players
      - **View Facilities**: Rent and manage your club facilities
-       - **View Competitions**: Enter, view, change, or leave competitions
-   - Click "Return to Main Menu" to go back to the main menu
+      - **View Competitions**: Enter, view, change, or leave competitions
+   - Use the top-right burger menu for Save Game and Return to Main Menu
 
 4. **Squad Management**:
    - Click "Scout for Players" to generate 3 random available players
@@ -124,14 +104,19 @@ Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game
    - Click “Change Competition” to show all options (the current one is marked “Current Competition”)
    - Click “Leave Competition” (red) to revert back to no competition
 
-7. **Saving Your Game**:
+7. **Time Progression**:
+   - Click “Next Week” in the top right to advance the season
+   - Week and Year are shown under the Club Overview heading
+   - Week/Year are stored in save files and shown in both save and load dialogs as “Game Progress”
+
+8. **Saving Your Game**:
    - Click the "Save Game" button on any game page
    - Select one of the 3 available save slots
    - Enter a custom label for your save (e.g., "My First Club")
    - Click "Confirm" to save
-   - Existing saves show their label, timestamp, club information, and facility details
+   - Existing saves show label, game progress (Week/Year), save time, club information, and facility details
 
-8. **Loading a Game**:
+9. **Loading a Game**:
    - From the main menu, click "Load Game"
    - Select a save slot to view its details
    - Click "Load" to continue from that save
@@ -159,7 +144,8 @@ grassroots-manager/
 │   ├── facilities.html     # Facilities view
 │   ├── competitions.html   # Competitions view
 │   ├── exit.html           # Exit page
-│   └── _save_modal.html    # Reusable save modal component
+│   ├── _save_modal.html    # Reusable save modal component
+│   └── _load_modal.html    # Reusable load modal component
 │
 ├── static/                 # Static assets (CSS and JavaScript)
 │   ├── styles.css          # Main stylesheet with:
@@ -168,7 +154,8 @@ grassroots-manager/
 │   │                       # - Button and form styles
 │   │                       # - Navigation menu styles
 │   ├── save_modal.js       # Save modal functionality
-│   └── load_modal.js       # Load modal functionality
+│   ├── load_modal.js       # Load modal functionality
+│   └── burger_menu.js      # Burger menu toggle for Save/Return dropdown
 │
 ├── saves/                  # Save game files (created automatically)
 │   └── slot_*.pkl          # Pickled save data files

@@ -15,31 +15,8 @@
         <a href="/exit">Exit Game</a>
     </div>
     
-    <!-- Load Game Modal -->
-    <div id="loadModal" class="modal">
-        <div class="modal-content">
-            <h3>Load Game</h3>
-            <p class="modal-description">Select a save to load</p>
-            
-            <div id="slotSelectionStepLoad">
-                <div class="slot-buttons" id="slotButtonsContainerLoad">
-                    <!-- Slots will be populated via JavaScript -->
-                </div>
-            </div>
-            
-            <div id="loadConfirmStep" class="hidden">
-                <div id="selectedSlotInfoLoad" class="modal-info-box">
-                    <!-- Selected slot info will be shown here -->
-                </div>
-            </div>
-            
-            <div class="modal-buttons">
-                <button id="backBtnLoad" onclick="backToSlotSelectionLoad()" class="btn-back hidden">Back</button>
-                <button id="confirmBtnLoad" onclick="confirmLoad()" class="btn-confirm hidden">Load</button>
-                <button onclick="closeLoadModal()" class="btn-cancel">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <!-- Include the reusable load modal -->
+    {% include '_load_modal.html' %}
     
     <!-- New Club Information Modal -->
     <div id="clubFormModal" class="modal">
@@ -86,96 +63,8 @@
             document.getElementById('clubFormModal').classList.remove('show');
             document.getElementById('clubForm').reset();
         }
-        
-        function openLoadModal() {
-            initializeLoadModal();
-            backToSlotSelectionLoad();
-            document.getElementById('loadModal').classList.add('show');
-        }
-        
-        function closeLoadModal() {
-            document.getElementById('loadModal').classList.remove('show');
-        }
-        
-        function initializeLoadModal() {
-            const container = document.getElementById('slotButtonsContainerLoad');
-            if (!container || !saveSlots) return;
-            
-            container.innerHTML = '';
-            
-            for (let slot = 1; slot <= 3; slot++) {
-                const slotData = saveSlots[slot.toString()];
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'slot-btn';
-                button.onclick = () => selectSlotLoad(slot);
-                
-                let buttonText = `Slot ${slot}`;
-                if (slotData.exists) {
-                    buttonText += ` - ${slotData.label}`;
-                } else {
-                    buttonText += ' (Empty)';
-                    button.disabled = true;
-                }
-                
-                button.innerHTML = buttonText;
-                container.appendChild(button);
-            }
-        }
-        
-        function selectSlotLoad(slot) {
-            const slotData = saveSlots[slot.toString()];
-            
-            // Update UI to show confirm step
-            document.getElementById('slotSelectionStepLoad').classList.add('hidden');
-            document.getElementById('loadConfirmStep').classList.remove('hidden');
-            document.getElementById('backBtnLoad').classList.remove('hidden');
-            document.getElementById('confirmBtnLoad').classList.remove('hidden');
-            
-            // Show selected slot details
-            let infoHtml = `<strong>Loading from Slot ${slot}</strong><br><br>`;
-            infoHtml += `<strong>Save Details:</strong><br>`;
-            infoHtml += `Label: ${slotData.label}<br>`;
-            infoHtml += `Date: ${slotData.timestamp}<br>`;
-            if (slotData.club_info) {
-                infoHtml += `<br>Club: ${slotData.club_info.name}<br>`;
-                infoHtml += `Location: ${slotData.club_info.city}, ${slotData.club_info.country}<br>`;
-                infoHtml += `Finances: $${slotData.club_info.finances}<br>`;
-                infoHtml += `Reputation: ${slotData.club_info.reputation}`;
-            }
-            
-            document.getElementById('selectedSlotInfoLoad').innerHTML = infoHtml;
-            window.selectedLoadSlot = slot;
-        }
-        
-        function backToSlotSelectionLoad() {
-            document.getElementById('slotSelectionStepLoad').classList.remove('hidden');
-            document.getElementById('loadConfirmStep').classList.add('hidden');
-            document.getElementById('backBtnLoad').classList.add('hidden');
-            document.getElementById('confirmBtnLoad').classList.add('hidden');
-            window.selectedLoadSlot = null;
-        }
-        
-        function confirmLoad() {
-            if (window.selectedLoadSlot === null) {
-                alert('Please select a slot first');
-                return;
-            }
-            window.location.href = '/load_game/' + window.selectedLoadSlot;
-        }
-        
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            var modal = document.getElementById('clubFormModal');
-            var loadModal = document.getElementById('loadModal');
-            if (event.target == modal) {
-                closeClubForm();
-            }
-            if (event.target == loadModal) {
-                closeLoadModal();
-            }
-        }
     </script>
+    <script src="/static/load_modal.js"></script>
     
     <footer>
         <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>

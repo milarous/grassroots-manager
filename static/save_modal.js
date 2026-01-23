@@ -43,7 +43,8 @@ function selectSlot(slot) {
     if (slotData.exists) {
         infoHtml += `<br><strong>Current Save:</strong><br>`;
         infoHtml += `Label: ${slotData.label}<br>`;
-        infoHtml += `Date: ${slotData.timestamp}<br>`;
+        infoHtml += `Game Progress: ${slotData.game_date}<br>`;
+        infoHtml += `Save Time: ${slotData.timestamp}<br>`;
         if (slotData.club_info) {
             infoHtml += `Club: ${slotData.club_info.name}<br>`;
             infoHtml += `Location: ${slotData.club_info.city}, ${slotData.club_info.country}<br>`;
