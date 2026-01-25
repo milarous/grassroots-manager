@@ -29,12 +29,7 @@
     </div>
     
     <div class="container">
-        <div class="left-menu">
-            <a href="/club" class="menu-button">Club Overview</a>
-            <a href="/squad" class="menu-button">View Squad</a>
-            <a href="/facilities" class="menu-button">View Facilities</a>
-            <a href="/competitions" class="menu-button active">View Competitions</a>
-        </div>
+        {% include '_game_menu.html' %}
         
         <div class="right-content">
             {% if current_competition %}
@@ -89,6 +84,9 @@
     
     <!-- Include the reusable save modal -->
     {% include '_save_modal.html' %}
+    
+    <!-- Include the week results modal -->
+    {% include '_week_results_modal.html' %}
     
     <script src="/static/burger_menu.js"></script>
     <script>

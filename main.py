@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 import os
 import pickle
@@ -18,6 +18,7 @@ class Club:
         self.competition = None    # Current entered competition
         self.week = 1              # Current game week
         self.year = 2026           # Current game year
+        self.calendar_events = []  # Calendar events
 
     def get_summary(self):
         return (
@@ -26,21 +27,23 @@ class Club:
             f"Country: {self.country}\n"
             f"Finances: ${self.finances}\n"
             f"Reputation: {self.reputation}\n"
-            f"Facilities: {self.facilities}\n"
+            f"Facility: {self.facility}\n"
             f"Competition: {self.competition}"
         )
 
 
 class Player:
-    def __init__(self, name, age, position, skill_level=1):
+    def __init__(self, name, age, position, skill_level=1, source=None):
         self.name = name
         self.age = age
         self.position = position  # e.g., "Forward", "Midfielder", "Defender", "Goalkeeper"
         self.skill_level = skill_level  # 1-10 scale
         self.player_type = "Senior"  # For now, only Senior players
+        self.source = source  # Where the player came from (flyers, social_media, open_training, word_of_mouth)
 
     def __str__(self):
-        return f"{self.name} ({self.age}, {self.position}, Skill: {self.skill_level})"
+        source_text = f" ({self.source})" if self.source else ""
+        return f"{self.name} ({self.age}, {self.position}, Skill: {self.skill_level}){source_text}"
 
 
 class Facility:
@@ -62,10 +65,33 @@ class Competition:
         return f"{self.name} - ${self.yearly_fee}/year"
 
 
+class CalendarEvent:
+    def __init__(self, name, event_type, week, year, notes=""):
+        self.name = name
+        self.event_type = event_type  # "match", "training", "meeting", "maintenance"
+        self.week = week
+        self.year = year
+        self.notes = notes
+
+    def __str__(self):
+        return f"{self.name} (Week {self.week}, {self.year})"
+
+
+# Event type colors
+EVENT_COLORS = {
+    "match": "#FF6B6B",        # Red for matches
+    "training": "#4ECDC4",     # Teal for training
+    "meeting": "#95E1D3",      # Light teal for meetings
+    "maintenance": "#F7DC6F",  # Yellow for maintenance
+    "marketing": "#9B59B6"     # Purple for marketing/advertising
+}
+
+
 # -----------------------------
 # Flask Web Application
 # -----------------------------
 app = Flask(__name__)
+app.secret_key = 'grassroots-manager-secret-key'
 
 # Initialize a default club
 club = None
@@ -122,6 +148,9 @@ def load_game(slot):
                 club.week = 1
             if club and not hasattr(club, 'year'):
                 club.year = 2026
+            # Ensure legacy saves have calendar_events attribute
+            if club and not hasattr(club, 'calendar_events'):
+                club.calendar_events = []
         return True
     except FileNotFoundError:
         return False
@@ -194,7 +223,7 @@ def get_save_slots():
             slots[str(i)] = {'exists': False, 'label': '', 'timestamp': '', 'game_date': '', 'club_info': None}
     return slots
 
-def generate_random_player():
+def generate_random_player(source=None):
     """Generate a random player for recruitment"""
     import random
     
@@ -207,7 +236,7 @@ def generate_random_player():
     position = random.choice(positions)
     skill_level = random.randint(1, 5)  # Start with lower skilled players for grassroots
     
-    return Player(name, age, position, skill_level)
+    return Player(name, age, position, skill_level, source)
 
 def scout_players():
     """Add some random players to the available pool"""
@@ -236,19 +265,87 @@ def club_overview():
     if club is None:
         return redirect(url_for('main_menu'))
     save_slots = get_save_slots()
-    return render_template('club.html', club=club, save_slots=save_slots)
+    # Get week results from session and immediately clear them
+    week_results = session.pop('week_results', None)
+    return render_template('club.html', club=club, save_slots=save_slots, current_page='club', week_results=week_results)
 
 @app.route('/squad')
 def squad_view():
     if club is None:
         return redirect(url_for('main_menu'))
     save_slots = get_save_slots()
-    return render_template('squad.html', club=club, available_players=available_players, save_slots=save_slots)
+    return render_template('squad.html', club=club, save_slots=save_slots, current_page='squad')
+
+@app.route('/training')
+def training_view():
+    if club is None:
+        return redirect(url_for('main_menu'))
+    save_slots = get_save_slots()
+    return render_template('training.html', club=club, save_slots=save_slots, current_page='training')
+
+@app.route('/marketing')
+def marketing_view():
+    if club is None:
+        return redirect(url_for('main_menu'))
+    save_slots = get_save_slots()
+    return render_template('marketing.html', club=club, available_players=available_players, save_slots=save_slots, current_page='marketing')
+
+@app.route('/advertise/<method>', methods=['POST'])
+def advertise(method):
+    if club is None:
+        return redirect(url_for('main_menu'))
+    
+    # Ensure calendar_events attribute exists (for legacy saves)
+    if not hasattr(club, 'calendar_events'):
+        club.calendar_events = []
+    
+    week_offset = int(request.form.get('week_offset', 0))
+    target_week = club.week + week_offset
+    target_year = club.year
+    
+    # Handle year rollover
+    if target_week > 52:
+        target_week -= 52
+        target_year += 1
+    
+    # Map method names to display names and event types
+    method_info = {
+        'flyers': {'name': 'Flyer Distribution', 'type': 'marketing', 'cost': 50},
+        'social_media': {'name': 'Social Media Post', 'type': 'marketing', 'cost': 0},
+        'open_training': {'name': 'Open Training Night', 'type': 'training', 'cost': 0}
+    }
+    
+    if method not in method_info:
+        flash('Invalid advertising method!', 'error')
+        return redirect(url_for('marketing_view'))
+    
+    info = method_info[method]
+    
+    # Check finances for paid methods
+    if info['cost'] > 0 and club.finances < info['cost']:
+        flash(f'Not enough funds! You need ${info["cost"]} but only have ${club.finances}.', 'error')
+        return redirect(url_for('marketing_view'))
+    
+    # Create calendar event with metadata
+    event = CalendarEvent(
+        name=info['name'],
+        event_type=info['type'],
+        week=target_week,
+        year=target_year,
+        notes=f"advertising:{method}"  # Store the method type in notes for execution
+    )
+    
+    club.calendar_events.append(event)
+    
+    week_display = f"week {target_week}" if week_offset == 0 else f"week {target_week} ({week_offset} week{'s' if week_offset > 1 else ''} from now)"
+    flash(f'{info["name"]} scheduled for {week_display}!', 'success')
+    
+    return redirect(url_for('marketing_view'))
 
 @app.route('/scout_players')
 def scout_players_route():
     scout_players()
-    return redirect(url_for('squad_view'))
+    return redirect(url_for('marketing_view'))
 
 @app.route('/recruit_player/<int:player_index>')
 def recruit_player(player_index):
@@ -258,14 +355,60 @@ def recruit_player(player_index):
     if 0 <= player_index < len(available_players):
         player = available_players.pop(player_index)
         club.squad.append(player)
-    return redirect(url_for('squad_view'))
+        flash(f'{player.name} has been recruited to the squad!', 'success')
+    return redirect(url_for('marketing_view'))
+
+@app.route('/calendar')
+def calendar_view():
+    if club is None:
+        return redirect(url_for('main_menu'))
+    
+    # Ensure calendar_events attribute exists (for legacy saves)
+    if not hasattr(club, 'calendar_events'):
+        club.calendar_events = []
+    
+    # Convert calendar events to dictionaries for JSON serialization
+    events_data = [
+        {
+            'name': event.name,
+            'event_type': event.event_type,
+            'week': event.week,
+            'year': event.year,
+            'notes': event.notes
+        }
+        for event in club.calendar_events
+    ]
+    
+    save_slots = get_save_slots()
+    return render_template('calendar.html', club=club, calendar_events=events_data, save_slots=save_slots, current_page='calendar', event_colors=EVENT_COLORS)
+
+@app.route('/add_calendar_event', methods=['POST'])
+def add_calendar_event():
+    if club is None:
+        return {'error': 'No club'}, 400
+    
+    data = request.get_json()
+    
+    if not data or not all(k in data for k in ('name', 'event_type', 'week', 'year')):
+        return {'error': 'Missing required fields'}, 400
+    
+    event = CalendarEvent(
+        name=data['name'],
+        event_type=data['event_type'],
+        week=data['week'],
+        year=data['year'],
+        notes=data.get('notes', '')
+    )
+    
+    club.calendar_events.append(event)
+    return {'success': True}, 200
 
 @app.route('/facilities')
 def facilities_view():
     if club is None:
         return redirect(url_for('main_menu'))
     save_slots = get_save_slots()
-    return render_template('facilities.html', club=club, save_slots=save_slots, facilities=adelaide_facilities)
+    return render_template('facilities.html', club=club, save_slots=save_slots, facilities=adelaide_facilities, current_page='facilities')
 
 @app.route('/rent_facility/<int:facility_index>')
 def rent_facility(facility_index):
@@ -291,7 +434,7 @@ def competitions_view():
     if club.competition is not current_comp:
         club.competition = current_comp
     save_slots = get_save_slots()
-    return render_template('competitions.html', club=club, save_slots=save_slots, competitions=competitions, current_competition=current_comp)
+    return render_template('competitions.html', club=club, save_slots=save_slots, competitions=competitions, current_competition=current_comp, current_page='competitions')
 
 
 @app.route('/enter_competition/<int:competition_index>')
@@ -314,12 +457,67 @@ def leave_competition():
 def next_week():
     if club is None:
         return redirect(url_for('main_menu'))
+    
+    import random
+    
+    week_results = []
+    
+    # Execute all scheduled events for the current week
+    events_to_execute = [e for e in club.calendar_events if e.week == club.week and e.year == club.year]
+    
+    for event in events_to_execute:
+        if event.notes and event.notes.startswith('advertising:'):
+            method = event.notes.split(':')[1]
+            
+            if method == 'flyers':
+                # Deduct cost
+                club.finances -= 50
+                num_players = random.randint(0, 3)
+                for _ in range(num_players):
+                    available_players.append(generate_random_player('Flyers'))
+                if num_players > 0:
+                    week_results.append(f'📋 Flyers distributed: {num_players} player(s) showed interest (Cost: $50)')
+                else:
+                    week_results.append('📋 Flyers distributed: No one showed interest (Cost: $50)')
+            
+            elif method == 'social_media':
+                num_players = random.randint(0, club.reputation + 2)
+                if num_players > 0:
+                    for _ in range(num_players):
+                        available_players.append(generate_random_player('Social Media'))
+                    week_results.append(f'📱 Social media post: {num_players} player(s) responded')
+                else:
+                    week_results.append('📱 Social media post: No responses yet')
+            
+            elif method == 'open_training':
+                num_players = random.randint(0, 5)
+                if num_players > 0:
+                    for _ in range(num_players):
+                        available_players.append(generate_random_player('Open Training'))
+                    week_results.append(f'⚽ Open training night: {num_players} player(s) attended')
+                else:
+                    week_results.append('⚽ Open training night: No one showed up')
+    
+    # Word of mouth: Passive player attraction based on reputation
+    if random.random() < (club.reputation * 0.05):  # 5% per reputation point
+        num_players = random.randint(0, max(1, club.reputation))
+        if num_players > 0:
+            for _ in range(num_players):
+                available_players.append(generate_random_player('Word of Mouth'))
+            week_results.append(f'💬 Word of mouth: {num_players} player(s) attracted')
+    
     club.week += 1
     if club.week > 52:
         club.week = 1
         club.year += 1
-    referrer = request.referrer if request.referrer else url_for('club_overview', _external=True)
-    return redirect(referrer)
+    
+    # Store results in session for the popup
+    from flask import session
+    session['week_results'] = week_results
+    
+    return redirect(url_for('club_overview'))
+
+@app.route('/clear_week_results', methods=['POST'])
 
 @app.route('/save_game/<int:slot>', methods=['POST'])
 def save_game_route(slot):

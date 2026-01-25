@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <a href="/next_week" class="next-week-btn">Next Week</a>
+
+    <div class="burger-menu">
+        <button id="burgerBtn" class="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="burgerDropdown" class="burger-dropdown">
+            <button onclick="openSaveModal()">Save Game</button>
+            <a href="/">Return to Main Menu</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>Marketing</h1>
+        {% if club %}
+        <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="container">
+        {% include '_game_menu.html' %}
+        
+        <div class="right-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="marketing-layout">
+                <div class="marketing-left">
+                    <h2>Attract Players</h2>
+                    <p>Use different methods to attract new players to your club. Schedule them for the current week or up to 3 weeks in advance:</p>
+                    
+                    <div class="advertising-options">
+                        <div class="ad-option">
+                            <h3>📋 Put Up Flyers</h3>
+                            <p class="ad-description">Print and distribute flyers around the local area.</p>
+                            <p class="ad-details"><strong>Cost:</strong> $50 | <strong>Effect:</strong> 1-3 players</p>
+                            <form action="/advertise/flyers" method="POST">
+                                <select name="week_offset" class="week-selector">
+                                    <option value="0">Current Week ({{ club.week }})</option>
+                                    <option value="1">Next Week ({{ club.week + 1 if club.week < 52 else 1 }})</option>
+                                    <option value="2">In 2 Weeks ({{ club.week + 2 if club.week < 51 else (club.week + 2 - 52) }})</option>
+                                    <option value="3">In 3 Weeks ({{ club.week + 3 if club.week < 50 else (club.week + 3 - 52) }})</option>
+                                </select>
+                                <button type="submit" class="menu-button">Schedule Flyers</button>
+                            </form>
+                        </div>
+                        
+                        <div class="ad-option">
+                            <h3>📱 Social Media Post</h3>
+                            <p class="ad-description">Create a post on social media to reach potential players.</p>
+                            <p class="ad-details"><strong>Cost:</strong> Free | <strong>Effect:</strong> Reputation-based ({{ club.reputation }} rep)</p>
+                            <form action="/advertise/social_media" method="POST">
+                                <select name="week_offset" class="week-selector">
+                                    <option value="0">Current Week ({{ club.week }})</option>
+                                    <option value="1">Next Week ({{ club.week + 1 if club.week < 52 else 1 }})</option>
+                                    <option value="2">In 2 Weeks ({{ club.week + 2 if club.week < 51 else (club.week + 2 - 52) }})</option>
+                                    <option value="3">In 3 Weeks ({{ club.week + 3 if club.week < 50 else (club.week + 3 - 52) }})</option>
+                                </select>
+                                <button type="submit" class="menu-button">Schedule Post</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="marketing-right">
+                    <h2>Contacts</h2>
+                    
+                    {% if available_players %}
+                        <ul class="contacts-list">
+                        {% for player in available_players %}
+                            <li class="contact-item">
+                                <div class="contact-info">
+                                    <strong>{{ player.name }}</strong>
+                                    <span class="contact-details">{{ player.age }}, {{ player.position }}, Skill: {{ player.skill_level }}</span>
+                                    {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
+                                </div>
+                                <a href="/recruit_player/{{ loop.index0 }}" class="menu-button inline-small">Recruit</a>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No contacts yet. Use the advertising methods to attract players!</p>
+                    {% endif %}
+                </div>
+            </div>
+    
+    <script src="/static/burger_menu.js"></script>
+    <script>
+        const saveSlots = {{ save_slots | tojson }};
+    </script>
+    <script src="/static/save_modal.js"></script>
+</body>
+</html>

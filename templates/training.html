@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <a href="/next_week" class="next-week-btn">Next Week</a>
+
+    <div class="burger-menu">
+        <button id="burgerBtn" class="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="burgerDropdown" class="burger-dropdown">
+            <button onclick="openSaveModal()">Save Game</button>
+            <a href="/">Return to Main Menu</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>Training</h1>
+        {% if club %}
+        <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="container">
+        {% include '_game_menu.html' %}
+        
+        <div class="right-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <h2>Training Events</h2>
+            <p>Schedule training sessions and events for your club:</p>
+            
+            <div class="advertising-options">
+                <div class="ad-option">
+                    <h3>⚽ Open Training Night</h3>
+                    <p class="ad-description">Host a free training session for interested players.</p>
+                    <p class="ad-details"><strong>Cost:</strong> Free | <strong>Effect:</strong> 0-5 players (risky)</p>
+                    <form action="/advertise/open_training" method="POST">
+                        <select name="week_offset" class="week-selector">
+                            <option value="0">Current Week ({{ club.week }})</option>
+                            <option value="1">Next Week ({{ club.week + 1 if club.week < 52 else 1 }})</option>
+                            <option value="2">In 2 Weeks ({{ club.week + 2 if club.week < 51 else (club.week + 2 - 52) }})</option>
+                            <option value="3">In 3 Weeks ({{ club.week + 3 if club.week < 50 else (club.week + 3 - 52) }})</option>
+                        </select>
+                        <button type="submit" class="menu-button">Schedule Training</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
+    
+    <!-- Include the reusable save modal -->
+    {% include '_save_modal.html' %}
+    
+    <!-- Include the week results modal -->
+    {% include '_week_results_modal.html' %}
+    
+    <script src="/static/burger_menu.js"></script>
+    <script>
+        const saveSlots = {{ save_slots | tojson }};
+    </script>
+    <script src="/static/save_modal.js"></script>
+</body>
+</html>

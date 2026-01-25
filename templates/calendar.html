@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <a href="/next_week" class="next-week-btn">Next Week</a>
+
+    <div class="burger-menu">
+        <button id="burgerBtn" class="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="burgerDropdown" class="burger-dropdown">
+            <button onclick="openSaveModal()">Save Game</button>
+            <a href="/">Return to Main Menu</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>Calendar</h1>
+        {% if club %}
+        <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="container">
+        {% include '_game_menu.html' %}
+        
+        <div class="right-content">
+            <!-- Year Navigation -->
+            <div class="calendar-header">
+                <div class="year-navigation">
+                    <button class="year-nav-btn" onclick="changeYear(-1)"><</button>
+                    <div class="current-year" id="yearDisplay">2026</div>
+                    <button class="year-nav-btn" onclick="changeYear(1)">></button>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #FF6B6B;"></div>
+                    <span>Match</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #4ECDC4;"></div>
+                    <span>Training</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #95E1D3;"></div>
+                    <span>Meeting</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #F7DC6F;"></div>
+                    <span>Maintenance</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #9B59B6;"></div>
+                    <span>Marketing</span>
+                </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="calendar-container">
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar weeks will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
+    
+    <!-- Include the reusable save modal -->
+    {% include '_save_modal.html' %}
+    
+    <!-- Include the week results modal -->
+    {% include '_week_results_modal.html' %}
+    
+    <script src="/static/burger_menu.js"></script>
+    <script>
+        const saveSlots = {{ save_slots | tojson }};
+        let displayYear = {{ club.year }};
+        let clubYear = {{ club.year }};
+        let calendarEvents = {{ calendar_events | tojson if calendar_events else "[]" }};
+        
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            document.getElementById('yearDisplay').textContent = displayYear;
+            
+            // Create a week card for each week of the year
+            for (let week = 1; week <= 52; week++) {
+                const weekCard = document.createElement('div');
+                weekCard.className = 'week-card';
+                
+                // Highlight current week
+                if (week === {{ club.week }} && displayYear === clubYear) {
+                    weekCard.classList.add('current-week');
+                }
+                
+                const weekHeader = document.createElement('div');
+                weekHeader.className = 'week-header';
+                weekHeader.textContent = `Week ${week}`;
+                
+                const eventsContainer = document.createElement('div');
+                eventsContainer.className = 'week-events';
+                
+                // Filter events for this week and year
+                const weekEvents = calendarEvents.filter(event => 
+                    event.week === week && event.year === displayYear
+                );
+                
+                if (weekEvents.length === 0) {
+                    const noEvents = document.createElement('div');
+                    noEvents.style.fontSize = '12px';
+                    noEvents.style.color = '#999';
+                    noEvents.textContent = 'No events';
+                    eventsContainer.appendChild(noEvents);
+                } else {
+                    weekEvents.forEach(event => {
+                        const eventEl = document.createElement('div');
+                        eventEl.className = `event event-${event.event_type}`;
+                        eventEl.textContent = event.name;
+                        eventEl.title = event.notes || '';
+                        eventsContainer.appendChild(eventEl);
+                    });
+                }
+                
+                weekCard.appendChild(weekHeader);
+                weekCard.appendChild(eventsContainer);
+                grid.appendChild(weekCard);
+            }
+        }
+        
+        function changeYear(direction) {
+            displayYear += direction;
+            renderCalendar();
+        }
+        
+        // Initialize
+        renderCalendar();
+    </script>
+    <script src="/static/save_modal.js"></script>
+</body>
+</html>

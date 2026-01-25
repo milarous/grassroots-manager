@@ -1,0 +1,31 @@
+<!-- Week Results Modal -->
+<div id="weekResultsModal" class="modal {% if week_results %}show{% endif %}">
+    <div class="modal-content">
+        <h2>Week Summary</h2>
+        {% if week_results %}
+            <div class="week-results-list">
+                {% for result in week_results %}
+                    <div class="week-result-item">{{ result }}</div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Nothing happened this week.</p>
+        {% endif %}
+        <div class="modal-buttons">
+            <button onclick="closeWeekResults()" class="menu-button">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function closeWeekResults() {
+        document.getElementById('weekResultsModal').classList.remove('show');
+    }
+    
+    // Auto-show modal if there are results
+    {% if week_results %}
+    window.addEventListener('load', function() {
+        document.getElementById('weekResultsModal').classList.add('show');
+    });
+    {% endif %}
+</script>
