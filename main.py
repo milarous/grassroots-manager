@@ -312,6 +312,8 @@ def advertise(method):
     method_info = {
         'flyers': {'name': 'Flyer Distribution', 'type': 'marketing', 'cost': 50},
         'social_media': {'name': 'Social Media Post', 'type': 'marketing', 'cost': 0},
+        'radio': {'name': 'Radio Advertisement', 'type': 'marketing', 'cost': 250},
+        'tv': {'name': 'TV Commercial', 'type': 'marketing', 'cost': 750},
         'open_training': {'name': 'Open Training Night', 'type': 'training', 'cost': 0}
     }
     
@@ -485,9 +487,25 @@ def next_week():
                 if num_players > 0:
                     for _ in range(num_players):
                         available_players.append(generate_random_player('Social Media'))
-                    week_results.append(f'📱 Social media post: {num_players} player(s) responded')
+                    week_results.append(f'� Social media post: {num_players} player(s) responded')
                 else:
-                    week_results.append('📱 Social media post: No responses yet')
+                    week_results.append('📣 Social media post: No responses yet')
+            
+            elif method == 'radio':
+                # Deduct cost
+                club.finances -= 250
+                num_players = random.randint(2, 8)
+                for _ in range(num_players):
+                    available_players.append(generate_random_player('Radio Ad'))
+                week_results.append(f'📻 Radio advertisement: {num_players} player(s) showed interest (Cost: $250)')
+            
+            elif method == 'tv':
+                # Deduct cost
+                club.finances -= 750
+                num_players = random.randint(5, 15)
+                for _ in range(num_players):
+                    available_players.append(generate_random_player('TV Commercial'))
+                week_results.append(f'📺 TV commercial: {num_players} player(s) showed interest (Cost: $750)')
             
             elif method == 'open_training':
                 num_players = random.randint(0, 5)

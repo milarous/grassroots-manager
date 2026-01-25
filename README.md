@@ -26,10 +26,12 @@ A web-based football management simulation game built with Flask. Manage your gr
 - **Time Progression**: Advance the season with the top-right "Next Week" button. Week/year are shown under Club Overview and stored in save data. Weekly events are executed automatically with results displayed in a popup modal.
 
 ### Player Recruitment & Marketing
-- **Marketing Page**: Centralized location for all player recruitment activities with two-column layout
-- **Advertising Methods**:
-  - **Flyers**: Print and distribute flyers around the local area (Cost: $50 | Effect: 1-3 players)
-  - **Social Media Post**: Reach potential players through social media (Cost: Free | Effect: Based on club reputation)
+- **Marketing Page**: Centralized location for all player recruitment activities
+- **Advertising Methods** (sorted by cost):
+  - **📣 Social Media Post**: Reach potential players through social media (Cost: Free | Effect: Based on club reputation)
+  - **📋 Flyers**: Print and distribute flyers around the local area (Cost: $50 | Effect: 0-3 players)
+  - **📻 Radio Advertisement**: Run a radio ad on local stations (Cost: $250 | Effect: 2-8 players)
+  - **📺 TV Commercial**: Broadcast a commercial on local TV channels (Cost: $750 | Effect: 5-15 players)
   - **Open Training Nights**: Invite players to training sessions (Cost: Free | Effect: Higher risk, reputation-dependent)
   - **Word of Mouth**: Passive recruitment based on club reputation (Automatic weekly execution)
 - **Player Source Tracking**: View where each player was recruited with colored source badges
@@ -123,13 +125,13 @@ Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game
 
 4. **Player Recruitment (Marketing)**:
    - Access the Marketing page from the left navigation menu
-   - **Left Column - Attract Players**:
-     - Use "Put Up Flyers" ($50, attracts 1-3 players)
-     - Use "Social Media Post" (Free, reputation-dependent)
-   - **Right Column - Contacts**:
-     - Browse available players showing name, age, position, skill level, and recruitment source
-     - Click "Recruit" to add any available player to your squad
+   - Choose from multiple advertising methods:
+     - **Social Media Post** (Free, reputation-dependent)
+     - **Put Up Flyers** ($50, attracts 0-3 players)
+     - **Radio Advertisement** ($250, attracts 2-8 players)
+     - **TV Commercial** ($750, attracts 5-15 players)
    - Schedule advertising campaigns 0-3 weeks in advance for automatic execution
+   - Browse and recruit available players from your contacts list
 
 5. **Training Management**:
    - Access the Training page from the left navigation menu
@@ -208,14 +210,7 @@ grassroots-manager/
 │   └── _week_results_modal.html # Weekly event results popup
 │
 ├── static/                 # Static assets (CSS and JavaScript)
-│   ├── styles.css          # Main stylesheet with:
-│   │                       # - Base styles and layout
-│   │                       # - Modal dialog styles
-│   │                       # - Button and form styles
-│   │                       # - Navigation menu styles
-│   │                       # - Two-column marketing layout
-│   │                       # - Calendar and event styles
-│   │                       # - Player source badge styles
+│   ├── styles.css          # Main stylesheet
 │   ├── burger_menu.js      # Burger menu toggle for Save/Return dropdown
 │   ├── save_modal.js       # Save modal functionality
 │   └── load_modal.js       # Load modal functionality
