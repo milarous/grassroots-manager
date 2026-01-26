@@ -11,8 +11,17 @@
             </div>
         </div>
         
-        <div class="modal-buttons">
+        <div id="initialButtons" class="modal-buttons">
             <button onclick="hangUp()" class="btn-hangup">Hang Up</button>
+        </div>
+        
+        <div id="responseOptions" class="modal-buttons" style="display: none;">
+            <button onclick="wrongNumber()" class="menu-button">Sorry, I think I have the wrong number...</button>
+            <button onclick="inviteToTraining()" class="menu-button">Hi, I'm calling from <span id="clubNameInButton"></span>. Interested in our Open Training Sessions?</button>
+        </div>
+        
+        <div id="trainingSelection" class="modal-buttons" style="display: none;">
+            <div id="trainingSessionsList"></div>
         </div>
     </div>
 </div>

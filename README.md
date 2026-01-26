@@ -32,17 +32,22 @@ A web-based football management simulation game built with Flask. Manage your gr
   - **📋 Flyers**: Print and distribute flyers around the local area (Cost: $50 | Effect: 0-3 players)
   - **📻 Radio Advertisement**: Run a radio ad on local stations (Cost: $250 | Effect: 2-8 players)
   - **📺 TV Commercial**: Broadcast a commercial on local TV channels (Cost: $750 | Effect: 5-15 players)
-  - **Open Training Nights**: Invite players to training sessions (Cost: Free | Effect: Higher risk, reputation-dependent)
   - **Word of Mouth**: Passive recruitment based on club reputation (Automatic weekly execution)
 - **Player Source Tracking**: View where each player was recruited with colored source badges
 - **Event Scheduling**: Schedule marketing campaigns up to 3 weeks in advance for automatic execution
 - **Contacts Management**: Browse available contacts who have responded to marketing efforts
   - View limited contact information (name, age, marketing source) for realism
-  - **Phone Call System** (IN PROGRESS): Interactive phone calls to invite contacts to training
+  - **Interactive Phone Call System**: Call contacts to invite them to training sessions
     - Click "Call" button to initiate phone conversation
-    - Speech bubble interface showing contact responses
-    - Hang up button to end call
-    - Full conversation flow and training invitation system under development
+    - Speech bubble interface showing realistic contact responses
+    - Two conversation options after initial greeting:
+      - "Sorry, I think I have the wrong number..." - Polite exit from call
+      - "Hi, I'm calling from [Club Name]. Interested in our Open Training Sessions?" - Invitation flow
+    - **Training Session Selection**: When contacts accept invitation, they ask "When are the training sessions?"
+      - Select from list of scheduled training sessions
+      - If no sessions scheduled: "We'll get back to you soon!" message
+      - Contact confirms attendance: "Perfect! I'll be there. See you then!"
+    - **Invited contacts automatically join squad** when they attend the scheduled training session
 
 ### Calendar System
 - **52-Week Calendar**: Full-year interactive calendar view with color-coded event types
@@ -54,11 +59,18 @@ A web-based football management simulation game built with Flask. Manage your gr
 ### Training Management
 - **Training Page**: Dedicated page for organizing training activities with two-column layout
   - **Left Column**: Schedule training events (Open Training Nights)
-  - **Right Column**: View upcoming scheduled training events
+  - **Right Column**: View upcoming scheduled training events with invitation tracking
 - **Open Training Nights**: Schedule community training sessions to attract new players
+  - Cost: Free | Effect: 0-5 random walk-ins + invited contacts
+  - Invited contacts automatically join the squad when training occurs
+  - Random walk-ins are added to the contacts list for recruitment
 - **Week Scheduling**: Select which week to hold training up to 3 weeks in advance
-- **Event Tracking**: See all upcoming training events with week and year information
-- **Contact Invitations** (IN PROGRESS): Ability to invite contacts from marketing page to specific training events
+- **Event Tracking**: See all upcoming training events with week, year, and invited contact count
+- **Contact Invitations**: Invite contacts from marketing page to specific training sessions
+  - Phone call system allows selecting which training session to invite contact to
+  - Each training event displays count of invited contacts
+  - View button shows list of all invited players for a session
+- **Separated from Marketing System**: Training uses dedicated `/schedule_training` route, independent from advertising
 
 ### Save System
 - **3 Save Slots**: Save your game progress in up to 3 different slots
@@ -145,13 +157,20 @@ Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game
      - **Radio Advertisement** ($250, attracts 2-8 players)
      - **TV Commercial** ($750, attracts 5-15 players)
    - Schedule advertising campaigns 0-3 weeks in advance for automatic execution
-   - Browse and recruit available players from your contacts list
+   - Browse available players in your contacts list
+   - **Call contacts to invite them to training**:
+     - Click "Call" button next to a contact
+     - Choose response option (wrong number or training invitation)
+     - If inviting: Select from scheduled training sessions
+     - Contact will attend and join squad when training occurs
 
 5. **Training Management**:
    - Access the Training page from the left navigation menu
    - Schedule "Open Training Night" events to attract new players
    - Select the week (current or up to 3 weeks in advance)
    - Click "Schedule Training" to add the event to your calendar
+   - View upcoming training events with invited contact counts
+   - When training occurs: invited contacts join squad, random walk-ins added to contacts
 
 6. **Calendar Management**:
    - Access the Calendar page from the left navigation menu
@@ -221,6 +240,7 @@ grassroots-manager/
 │   ├── _game_menu.html     # Reusable navigation menu component
 │   ├── _save_modal.html    # Reusable save modal component
 │   ├── _load_modal.html    # Reusable load modal component
+│   ├── _call_modal.html    # Phone call modal with speech bubbles and training selection
 │   └── _week_results_modal.html # Weekly event results popup
 │
 ├── static/                 # Static assets (CSS and JavaScript)
@@ -228,7 +248,8 @@ grassroots-manager/
 │   ├── theme_toggle.js     # Light/dark mode toggle functionality
 │   ├── burger_menu.js      # Burger menu toggle for Save/Return dropdown
 │   ├── save_modal.js       # Save modal functionality
-│   └── load_modal.js       # Load modal functionality
+│   ├── load_modal.js       # Load modal functionality
+│   └── call_modal.js       # Phone call modal with training invitation system
 │
 ├── saves/                  # Save game files (created automatically)
 │   └── slot_*.pkl          # Pickled save data files containing:
@@ -247,7 +268,7 @@ grassroots-manager/
 - **Game Classes**:
   - `Club`: Manages club state (finances, reputation, week/year, squad, facilities, competitions)
   - `Player`: Represents players with attributes and recruitment source tracking
-  - `CalendarEvent`: Manages scheduled events with type and timing information
+  - `CalendarEvent`: Manages scheduled events with type, timing, and invited contacts list
   - `Facility`: Represents rentable training facilities
   - `Competition`: Represents league associations
 - **Persistence**: Save system using Python's pickle module for object serialization

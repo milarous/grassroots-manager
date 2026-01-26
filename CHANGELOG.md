@@ -15,15 +15,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CSS custom properties (variables) for consistent theming
   - Smooth transitions between light and dark modes
   - Optimized contrast and colors for accessibility in both modes
-- Interactive phone call system for contacting players (IN PROGRESS)
-  - Call button replaces direct recruitment on marketing page
-  - Phone call modal with speech bubble interface
-  - Initial greeting from contact
-  - Hang up button to end call
-  - Full call conversation flow (PENDING)
+- **Interactive phone call system for player recruitment**
+  - Call button on marketing page to contact interested players
+  - Phone call modal with speech bubble interface showing contact responses
+  - Two-stage conversation flow with response options
+  - Option 1: "Sorry, I think I have the wrong number..." (polite exit)
+  - Option 2: Invite contact to open training sessions
+  - Training session selection interface when inviting players
+  - Fallback message when no training sessions are scheduled
+  - Automatic squad recruitment when contact accepts and attends training
+- **Training session invitation system**
+  - Contacts can be invited to specific scheduled training events
+  - Each training event now tracks invited contacts
+  - Invited contacts automatically join squad when training session occurs
+  - Training page displays count of invited contacts per session
+  - View button to see list of invited contacts for each session
+- **Separated training scheduling from advertising system**
+  - New dedicated `/schedule_training` route for training-specific scheduling
+  - Training events now use `training:` prefix instead of `advertising:` prefix
+  - Clean separation of concerns between marketing/advertising and training activities
+  - Easier to extend with new training types in the future
 - Training page two-column layout with upcoming events view
   - Left column: Schedule training events
-  - Right column: View upcoming training events
+  - Right column: View upcoming training events with invitation counts
   - Event list view for scheduled training sessions
 
 ### Changed
@@ -32,15 +46,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed Social Media Post emoji to megaphone (📣)
 - Enhanced CSS architecture with theme variables for better maintainability
 - **Marketing contact information now shows only name, age, and source** (removed position and skill level for realism)
-- Recruitment process changed to phone call workflow (invitation to training) (IN PROGRESS)
+- **Recruitment workflow completely redesigned**:
+  - Removed instant recruitment button
+  - Changed to phone call invitation workflow
+  - Contacts must be invited to training sessions
+  - Players join squad when they attend scheduled training
+- **Open Training Night moved from Marketing page to Training page**
+  - Scheduling now uses dedicated training route
+  - Confirmation message stays on Training page (not Marketing page)
 - Training page restructured to mirror marketing page layout
 - Contact badges now have dynamic width based on content
 - Aligned "Attract Players" and "Contacts" headings on marketing page
+- **Training event execution now includes invited contacts**
+  - Invited players automatically join squad when event occurs
+  - Random walk-ins still added to contacts list
+  - Week results message shows both invited players and walk-ins separately
+- **CalendarEvent class extended with `invited_contacts` list attribute**
 
 ### Fixed
 - Player source badge width inconsistency across contacts
 - Heading alignment issues between left and right columns on marketing page
 - Hang up button color now displays correctly in red
+- **Routing issue where training confirmations appeared on wrong page**
+  - Training events now correctly redirect to Training page
+  - Marketing events redirect to Marketing page
 
 ## [0.3.0] - 2025-01-25
 

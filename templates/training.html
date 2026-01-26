@@ -54,7 +54,7 @@
                                 <p class="ad-details"><strong>Cost:</strong> Free | <strong>Effect:</strong> 0-5 players (risky)</p>
                             </div>
                             <div class="ad-option-right">
-                                <form action="/advertise/open_training" method="POST">
+                                <form action="/schedule_training/open_training" method="POST">
                                     <select name="week_offset" class="week-selector">
                                         <option value="0">Current Week ({{ club.week }})</option>
                                         <option value="1">Next Week ({{ club.week + 1 if club.week < 52 else 1 }})</option>
@@ -78,8 +78,13 @@
                                 <div class="contact-info">
                                     <strong>{{ event.name }}</strong>
                                     <span class="contact-details">Week {{ event.week }}, {{ event.year }}</span>
+                                    {% if event.invited_contacts %}
+                                        <span class="contact-details">📋 {{ event.invited_contacts|length }} invited</span>
+                                    {% endif %}
                                 </div>
-                                <button class="menu-button inline-small">View</button>
+                                {% if event.invited_contacts %}
+                                    <button class="menu-button inline-small" onclick="alert('Invited contacts:\n{{ event.invited_contacts|map(attribute='name')|join(', ') }}')">View</button>
+                                {% endif %}
                             </li>
                         {% endfor %}
                         </ul>

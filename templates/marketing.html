@@ -137,7 +137,7 @@
                                     <span class="contact-details">Age: {{ player.age }}</span>
                                     {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
                                 </div>
-                                <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }})" class="menu-button inline-small">Call</button>
+                                <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }}, '{{ club.name }}')" class="menu-button inline-small">Call</button>
                             </li>
                         {% endfor %}
                         </ul>

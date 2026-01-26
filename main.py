@@ -72,6 +72,7 @@ class CalendarEvent:
         self.week = week
         self.year = year
         self.notes = notes
+        self.invited_contacts = []  # List of player dictionaries invited to this event
 
     def __str__(self):
         return f"{self.name} (Week {self.week}, {self.year})"
@@ -316,13 +317,12 @@ def advertise(method):
         target_week -= 52
         target_year += 1
     
-    # Map method names to display names and event types
+    # Map advertising method names to display names and event types
     method_info = {
         'flyers': {'name': 'Flyer Distribution', 'type': 'marketing', 'cost': 50},
         'social_media': {'name': 'Social Media Post', 'type': 'marketing', 'cost': 0},
         'radio': {'name': 'Radio Advertisement', 'type': 'marketing', 'cost': 250},
-        'tv': {'name': 'TV Commercial', 'type': 'marketing', 'cost': 750},
-        'open_training': {'name': 'Open Training Night', 'type': 'training', 'cost': 0}
+        'tv': {'name': 'TV Commercial', 'type': 'marketing', 'cost': 750}
     }
     
     if method not in method_info:
@@ -352,6 +352,56 @@ def advertise(method):
     
     return redirect(url_for('marketing_view'))
 
+@app.route('/schedule_training/<method>', methods=['POST'])
+def schedule_training(method):
+    if club is None:
+        return redirect(url_for('main_menu'))
+    
+    # Ensure calendar_events attribute exists (for legacy saves)
+    if not hasattr(club, 'calendar_events'):
+        club.calendar_events = []
+    
+    week_offset = int(request.form.get('week_offset', 0))
+    target_week = club.week + week_offset
+    target_year = club.year
+    
+    # Handle year rollover
+    if target_week > 52:
+        target_week -= 52
+        target_year += 1
+    
+    # Map training method names to display names and costs
+    training_info = {
+        'open_training': {'name': 'Open Training Night', 'cost': 0}
+    }
+    
+    if method not in training_info:
+        flash('Invalid training method!', 'error')
+        return redirect(url_for('training_view'))
+    
+    info = training_info[method]
+    
+    # Check finances for paid methods
+    if info['cost'] > 0 and club.finances < info['cost']:
+        flash(f'Not enough funds! You need ${info["cost"]} but only have ${club.finances}.', 'error')
+        return redirect(url_for('training_view'))
+    
+    # Create calendar event with metadata
+    event = CalendarEvent(
+        name=info['name'],
+        event_type='training',
+        week=target_week,
+        year=target_year,
+        notes=f"training:{method}"  # Store the method type in notes for execution
+    )
+    
+    club.calendar_events.append(event)
+    
+    week_display = f"week {target_week}" if week_offset == 0 else f"week {target_week} ({week_offset} week{'s' if week_offset > 1 else ''} from now)"
+    flash(f'{info["name"]} scheduled for {week_display}!', 'success')
+    
+    return redirect(url_for('training_view'))
+
 @app.route('/scout_players')
 def scout_players_route():
     scout_players()
@@ -367,6 +417,76 @@ def recruit_player(player_index):
         club.squad.append(player)
         flash(f'{player.name} has been recruited to the squad!', 'success')
     return redirect(url_for('marketing_view'))
+
+@app.route('/invite_to_training/<int:player_index>', methods=['POST'])
+def invite_to_training(player_index):
+    if club is None:
+        return {'success': False, 'error': 'No club'}, 400
+    
+    global available_players
+    if 0 <= player_index < len(available_players):
+        # Get upcoming training sessions
+        upcoming_training = [event for event in club.calendar_events 
+                           if event.event_type == 'training' 
+                           and (event.year > club.year or (event.year == club.year and event.week >= club.week))]
+        
+        # Return player info and training sessions
+        player = available_players[player_index]
+        training_sessions = [
+            {
+                'index': i,
+                'name': event.name,
+                'week': event.week,
+                'year': event.year
+            }
+            for i, event in enumerate(upcoming_training)
+        ]
+        
+        return {
+            'success': True,
+            'player': {
+                'name': player.name,
+                'index': player_index
+            },
+            'training_sessions': training_sessions
+        }
+    
+    return {'success': False, 'error': 'Invalid player index'}, 400
+
+@app.route('/add_contact_to_training/<int:player_index>/<int:training_index>', methods=['POST'])
+def add_contact_to_training(player_index, training_index):
+    if club is None:
+        return {'success': False, 'error': 'No club'}, 400
+    
+    global available_players
+    if 0 <= player_index < len(available_players):
+        # Get upcoming training sessions
+        upcoming_training = [event for event in club.calendar_events 
+                           if event.event_type == 'training' 
+                           and (event.year > club.year or (event.year == club.year and event.week >= club.week))]
+        
+        if 0 <= training_index < len(upcoming_training):
+            player = available_players.pop(player_index)
+            
+            # Ensure the event has invited_contacts list (for legacy saves)
+            if not hasattr(upcoming_training[training_index], 'invited_contacts'):
+                upcoming_training[training_index].invited_contacts = []
+            
+            # Add player to the training session's invited contacts
+            upcoming_training[training_index].invited_contacts.append({
+                'name': player.name,
+                'age': player.age,
+                'position': player.position,
+                'skill_level': player.skill_level,
+                'source': player.source
+            })
+            
+            flash(f'{player.name} has been invited to {upcoming_training[training_index].name} (Week {upcoming_training[training_index].week})!', 'success')
+            return {'success': True}
+        
+        return {'success': False, 'error': 'Invalid training index'}, 400
+    
+    return {'success': False, 'error': 'Invalid player index'}, 400
 
 @app.route('/calendar')
 def calendar_view():
@@ -476,6 +596,7 @@ def next_week():
     events_to_execute = [e for e in club.calendar_events if e.week == club.week and e.year == club.year]
     
     for event in events_to_execute:
+        # Handle advertising events
         if event.notes and event.notes.startswith('advertising:'):
             method = event.notes.split(':')[1]
             
@@ -495,7 +616,7 @@ def next_week():
                 if num_players > 0:
                     for _ in range(num_players):
                         available_players.append(generate_random_player('Social Media'))
-                    week_results.append(f'� Social media post: {num_players} player(s) responded')
+                    week_results.append(f'📣 Social media post: {num_players} player(s) responded')
                 else:
                     week_results.append('📣 Social media post: No responses yet')
             
@@ -514,13 +635,41 @@ def next_week():
                 for _ in range(num_players):
                     available_players.append(generate_random_player('TV Commercial'))
                 week_results.append(f'📺 TV commercial: {num_players} player(s) showed interest (Cost: $750)')
+        
+        # Handle training events
+        elif event.notes and event.notes.startswith('training:'):
+            method = event.notes.split(':')[1]
             
-            elif method == 'open_training':
+            if method == 'open_training':
+                # Ensure invited_contacts exists (for legacy saves)
+                if not hasattr(event, 'invited_contacts'):
+                    event.invited_contacts = []
+                
+                # Add invited contacts to the squad
+                invited_count = len(event.invited_contacts)
+                for contact in event.invited_contacts:
+                    player = Player(
+                        name=contact['name'],
+                        age=contact['age'],
+                        position=contact['position'],
+                        skill_level=contact['skill_level'],
+                        source=contact.get('source', 'Open Training')
+                    )
+                    club.squad.append(player)
+                
+                # Also add random walk-ins
                 num_players = random.randint(0, 5)
                 if num_players > 0:
                     for _ in range(num_players):
                         available_players.append(generate_random_player('Open Training'))
-                    week_results.append(f'⚽ Open training night: {num_players} player(s) attended')
+                
+                # Build results message
+                if invited_count > 0 and num_players > 0:
+                    week_results.append(f'⚽ Open training night: {invited_count} invited player(s) joined the squad, {num_players} walk-in(s) showed interest')
+                elif invited_count > 0:
+                    week_results.append(f'⚽ Open training night: {invited_count} invited player(s) joined the squad')
+                elif num_players > 0:
+                    week_results.append(f'⚽ Open training night: {num_players} walk-in player(s) showed interest')
                 else:
                     week_results.append('⚽ Open training night: No one showed up')
     
