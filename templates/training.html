@@ -41,23 +41,51 @@
                 {% endif %}
             {% endwith %}
             
-            <h2>Training Events</h2>
-            <p>Schedule training sessions and events for your club:</p>
-            
-            <div class="advertising-options">
-                <div class="ad-option">
-                    <h3>⚽ Open Training Night</h3>
-                    <p class="ad-description">Host a free training session for interested players.</p>
-                    <p class="ad-details"><strong>Cost:</strong> Free | <strong>Effect:</strong> 0-5 players (risky)</p>
-                    <form action="/advertise/open_training" method="POST">
-                        <select name="week_offset" class="week-selector">
-                            <option value="0">Current Week ({{ club.week }})</option>
-                            <option value="1">Next Week ({{ club.week + 1 if club.week < 52 else 1 }})</option>
-                            <option value="2">In 2 Weeks ({{ club.week + 2 if club.week < 51 else (club.week + 2 - 52) }})</option>
-                            <option value="3">In 3 Weeks ({{ club.week + 3 if club.week < 50 else (club.week + 3 - 52) }})</option>
-                        </select>
-                        <button type="submit" class="menu-button">Schedule Training</button>
-                    </form>
+            <div class="marketing-layout">
+                <div class="marketing-left">
+                    <h2>Schedule Training Event</h2>
+                    <p>Schedule training sessions and events for your club:</p>
+                    
+                    <div class="advertising-options">
+                        <div class="ad-option">
+                            <div class="ad-option-left">
+                                <h3>⚽ Open Training Night</h3>
+                                <p class="ad-description">Host a free training session for interested players.</p>
+                                <p class="ad-details"><strong>Cost:</strong> Free | <strong>Effect:</strong> 0-5 players (risky)</p>
+                            </div>
+                            <div class="ad-option-right">
+                                <form action="/advertise/open_training" method="POST">
+                                    <select name="week_offset" class="week-selector">
+                                        <option value="0">Current Week ({{ club.week }})</option>
+                                        <option value="1">Next Week ({{ club.week + 1 if club.week < 52 else 1 }})</option>
+                                        <option value="2">In 2 Weeks ({{ club.week + 2 if club.week < 51 else (club.week + 2 - 52) }})</option>
+                                        <option value="3">In 3 Weeks ({{ club.week + 3 if club.week < 50 else (club.week + 3 - 52) }})</option>
+                                    </select>
+                                    <button type="submit" class="menu-button">Schedule Training</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="marketing-right">
+                    <h2>Upcoming Training Events</h2>
+                    
+                    {% if upcoming_training_events %}
+                        <ul class="contacts-list">
+                        {% for event in upcoming_training_events %}
+                            <li class="contact-item">
+                                <div class="contact-info">
+                                    <strong>{{ event.name }}</strong>
+                                    <span class="contact-details">Week {{ event.week }}, {{ event.year }}</span>
+                                </div>
+                                <button class="menu-button inline-small">View</button>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No upcoming training events. Schedule one to get started!</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

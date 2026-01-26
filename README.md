@@ -36,7 +36,13 @@ A web-based football management simulation game built with Flask. Manage your gr
   - **Word of Mouth**: Passive recruitment based on club reputation (Automatic weekly execution)
 - **Player Source Tracking**: View where each player was recruited with colored source badges
 - **Event Scheduling**: Schedule marketing campaigns up to 3 weeks in advance for automatic execution
-- **Contacts Management**: Browse and recruit available players who have responded to marketing efforts
+- **Contacts Management**: Browse available contacts who have responded to marketing efforts
+  - View limited contact information (name, age, marketing source) for realism
+  - **Phone Call System** (IN PROGRESS): Interactive phone calls to invite contacts to training
+    - Click "Call" button to initiate phone conversation
+    - Speech bubble interface showing contact responses
+    - Hang up button to end call
+    - Full conversation flow and training invitation system under development
 
 ### Calendar System
 - **52-Week Calendar**: Full-year interactive calendar view with color-coded event types
@@ -46,9 +52,13 @@ A web-based football management simulation game built with Flask. Manage your gr
 - **Automatic Event Execution**: Scheduled events execute when "Next Week" is clicked with results popup
 
 ### Training Management
-- **Training Page**: Dedicated page for organizing training activities
+- **Training Page**: Dedicated page for organizing training activities with two-column layout
+  - **Left Column**: Schedule training events (Open Training Nights)
+  - **Right Column**: View upcoming scheduled training events
 - **Open Training Nights**: Schedule community training sessions to attract new players
 - **Week Scheduling**: Select which week to hold training up to 3 weeks in advance
+- **Event Tracking**: See all upcoming training events with week and year information
+- **Contact Invitations** (IN PROGRESS): Ability to invite contacts from marketing page to specific training events
 
 ### Save System
 - **3 Save Slots**: Save your game progress in up to 3 different slots

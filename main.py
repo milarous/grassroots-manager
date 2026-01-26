@@ -281,7 +281,15 @@ def training_view():
     if club is None:
         return redirect(url_for('main_menu'))
     save_slots = get_save_slots()
-    return render_template('training.html', club=club, save_slots=save_slots, current_page='training')
+    
+    # Get upcoming training events
+    upcoming_training_events = []
+    if hasattr(club, 'calendar_events'):
+        for event in club.calendar_events:
+            if event.event_type == 'training':
+                upcoming_training_events.append(event)
+    
+    return render_template('training.html', club=club, save_slots=save_slots, current_page='training', upcoming_training_events=upcoming_training_events)
 
 @app.route('/marketing')
 def marketing_view():

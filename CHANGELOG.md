@@ -15,12 +15,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CSS custom properties (variables) for consistent theming
   - Smooth transitions between light and dark modes
   - Optimized contrast and colors for accessibility in both modes
+- Interactive phone call system for contacting players (IN PROGRESS)
+  - Call button replaces direct recruitment on marketing page
+  - Phone call modal with speech bubble interface
+  - Initial greeting from contact
+  - Hang up button to end call
+  - Full call conversation flow (PENDING)
+- Training page two-column layout with upcoming events view
+  - Left column: Schedule training events
+  - Right column: View upcoming training events
+  - Event list view for scheduled training sessions
 
 ### Changed
 - Improved marketing page layout with vertical card stacking
 - Updated flyers effect to 0-3 players (was 1-3)
 - Changed Social Media Post emoji to megaphone (📣)
 - Enhanced CSS architecture with theme variables for better maintainability
+- **Marketing contact information now shows only name, age, and source** (removed position and skill level for realism)
+- Recruitment process changed to phone call workflow (invitation to training) (IN PROGRESS)
+- Training page restructured to mirror marketing page layout
+- Contact badges now have dynamic width based on content
+- Aligned "Attract Players" and "Contacts" headings on marketing page
+
+### Fixed
+- Player source badge width inconsistency across contacts
+- Heading alignment issues between left and right columns on marketing page
+- Hang up button color now displays correctly in red
 
 ## [0.3.0] - 2025-01-25
 

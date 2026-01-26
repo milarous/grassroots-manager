@@ -1039,6 +1039,9 @@ footer {
     font-weight: bold;
     margin: 0 8px;
     border: 1px solid #0277BD;
+    width: auto;
+    min-width: fit-content;
+    white-space: nowrap;
 }
 /* Marketing page two-column layout */
 .marketing-layout {
@@ -1053,6 +1056,7 @@ footer {
     text-align: left;
 }
 
+.marketing-left h2,
 .marketing-right h2 {
     margin-top: 0;
 }
@@ -1083,6 +1087,7 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    align-items: flex-start;
 }
 
 .contact-details {
@@ -1092,4 +1097,77 @@ footer {
 
 .contact-item .menu-button {
     min-width: 100px;
+}
+
+/* Call Modal Styles */
+.call-modal-content {
+    width: 400px;
+    max-width: 90%;
+}
+
+.call-interface {
+    padding: 20px 0;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.speech-bubble {
+    position: relative;
+    background-color: var(--info-box-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    padding: 20px;
+    max-width: 80%;
+    margin: 20px auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 30px;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 0px solid transparent;
+    border-top: 20px solid var(--border-color);
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: 32px;
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 0px solid transparent;
+    border-top: 18px solid var(--info-box-bg);
+}
+
+.speech-bubble p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+.btn-hangup {
+    background-color: #e74c3c !important;
+    color: white !important;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-hangup:hover {
+    background-color: #c0392b !important;
 }

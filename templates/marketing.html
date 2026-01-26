@@ -134,10 +134,10 @@
                             <li class="contact-item">
                                 <div class="contact-info">
                                     <strong>{{ player.name }}</strong>
-                                    <span class="contact-details">{{ player.age }}, {{ player.position }}, Skill: {{ player.skill_level }}</span>
+                                    <span class="contact-details">Age: {{ player.age }}</span>
                                     {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
                                 </div>
-                                <a href="/recruit_player/{{ loop.index0 }}" class="menu-button inline-small">Recruit</a>
+                                <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }})" class="menu-button inline-small">Call</button>
                             </li>
                         {% endfor %}
                         </ul>
@@ -147,10 +147,13 @@
                 </div>
             </div>
     
+    {% include '_call_modal.html' %}
+    
     <script src="/static/burger_menu.js"></script>
     <script>
         const saveSlots = {{ save_slots | tojson }};
     </script>
     <script src="/static/save_modal.js"></script>
+    <script src="/static/call_modal.js"></script>
 </body>
 </html>
