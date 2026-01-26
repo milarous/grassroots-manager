@@ -10,11 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Radio Advertisement marketing option ($250, attracts 2-8 players)
 - TV Commercial marketing option ($750, attracts 5-15 players)
+- Light/Dark mode toggle with theme switcher button in footer
+  - Theme preference persists using browser localStorage
+  - CSS custom properties (variables) for consistent theming
+  - Smooth transitions between light and dark modes
+  - Optimized contrast and colors for accessibility in both modes
 
 ### Changed
 - Improved marketing page layout with vertical card stacking
 - Updated flyers effect to 0-3 players (was 1-3)
 - Changed Social Media Post emoji to megaphone (📣)
+- Enhanced CSS architecture with theme variables for better maintainability
 
 ## [0.3.0] - 2025-01-25
 

@@ -61,6 +61,10 @@ A web-based football management simulation game built with Flask. Manage your gr
 
 ### User Interface
 - **Modern Web Interface**: Clean, responsive HTML/CSS design with grid and flexbox layouts
+- **Light/Dark Mode Toggle**: Switch between light and dark themes with a toggle button in the footer
+  - Theme preference is saved to browser localStorage
+  - Smooth transitions between themes
+  - Optimized colors for both modes with proper contrast
 - **Navigation Menu**: Easy-to-use left-side navigation menu on all game pages
   - Club Overview
   - Calendar
@@ -210,7 +214,8 @@ grassroots-manager/
 │   └── _week_results_modal.html # Weekly event results popup
 │
 ├── static/                 # Static assets (CSS and JavaScript)
-│   ├── styles.css          # Main stylesheet
+│   ├── styles.css          # Main stylesheet with CSS custom properties for theming
+│   ├── theme_toggle.js     # Light/dark mode toggle functionality
 │   ├── burger_menu.js      # Burger menu toggle for Save/Return dropdown
 │   ├── save_modal.js       # Save modal functionality
 │   └── load_modal.js       # Load modal functionality
