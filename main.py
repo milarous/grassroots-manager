@@ -488,6 +488,26 @@ def add_contact_to_training(player_index, training_index):
     
     return {'success': False, 'error': 'Invalid player index'}, 400
 
+@app.route('/remove_contact/<int:player_index>', methods=['POST'])
+def remove_contact(player_index):
+    """Remove a contact from the available players list (e.g., for wrong number or not interested)"""
+    if club is None:
+        return {'success': False, 'error': 'No club'}, 400
+    
+    global available_players
+    if 0 <= player_index < len(available_players):
+        reason = request.args.get('reason', 'disconnected')
+        removed_player = available_players.pop(player_index)
+        
+        if reason == 'not_interested':
+            flash(f'{removed_player.name} was not interested and has been removed from contacts.', 'info')
+        else:  # disconnected or any other reason
+            flash(f'{removed_player.name}\'s contact has been removed (disconnected number).', 'info')
+        
+        return {'success': True}
+    
+    return {'success': False, 'error': 'Invalid player index'}, 400
+
 @app.route('/calendar')
 def calendar_view():
     if club is None:

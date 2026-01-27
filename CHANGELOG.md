@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CSS custom properties (variables) for consistent theming
   - Smooth transitions between light and dark modes
   - Optimized contrast and colors for accessibility in both modes
-- **Interactive phone call system for player recruitment**
+- **Interactive phone call system for player recruitment (⚠️ Under Construction)**
   - Call button on marketing page to contact interested players
   - Phone call modal with speech bubble interface showing contact responses
   - Two-stage conversation flow with response options
@@ -24,6 +24,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Training session selection interface when inviting players
   - Fallback message when no training sessions are scheduled
   - Automatic squad recruitment when contact accepts and attends training
+  - **Realistic call outcomes with probability-based responses**:
+    - 5% chance of disconnected number (wrong number)
+    - 10% chance contact declines training invitation
+    - 85% chance of successful invitation flow
+  - **Dynamic contact removal system**:
+    - Contacts removed when disconnected number is encountered
+    - Contacts removed when they decline training invitation
+    - Different flash messages based on removal reason
+  - **Improved call modal UI**:
+    - Hang up button always visible below conversation area
+    - No longer hides during response options
+    - Consistent button placement throughout call flow
 - **Training session invitation system**
   - Contacts can be invited to specific scheduled training events
   - Each training event now tracks invited contacts
@@ -39,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Left column: Schedule training events
   - Right column: View upcoming training events with invitation counts
   - Event list view for scheduled training sessions
+- **Backend API endpoint for contact removal** (`/remove_contact/<player_index>`)
+  - Accepts reason parameter (disconnected or not_interested)
+  - Returns appropriate flash messages based on removal reason
+  - Integrated with call modal for automatic cleanup
 
 ### Changed
 - Improved marketing page layout with vertical card stacking
