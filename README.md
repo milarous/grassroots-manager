@@ -93,6 +93,7 @@ A web-based football management simulation game built with Flask. Manage your gr
   - Theme preference is saved to browser localStorage
   - Smooth transitions between themes
   - Optimized colors for both modes with proper contrast
+- **UI Polish**: The "View Invited Players" modal has been redesigned for a cleaner look, and the calendar icon has been restored to the upcoming training list for better visual clarity.
 - **Navigation Menu**: Easy-to-use left-side navigation menu on all game pages
   - Club Overview
   - Calendar

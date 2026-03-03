@@ -79,11 +79,11 @@
                                     <strong>{{ event.name }}</strong>
                                     <span class="contact-details">Week {{ event.week }}, {{ event.year }}</span>
                                     {% if event.invited_contacts %}
-                                        <span class="contact-details">📋 {{ event.invited_contacts|length }} invited</span>
+                                        <span class="contact-details">📅 {{ event.invited_contacts|length }} invited</span>
                                     {% endif %}
                                 </div>
                                 {% if event.invited_contacts %}
-                                    <button class="menu-button inline-small" onclick="alert('Invited contacts:\n{{ event.invited_contacts|map(attribute='name')|join(', ') }}')">View</button>
+                                    <button class="menu-button inline-small" onclick='openViewInvitedModal({{ event.invited_contacts|tojson}})'>View</button>
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -102,6 +102,9 @@
     
     <!-- Include the reusable save modal -->
     {% include '_save_modal.html' %}
+
+    <!-- Include the view invited modal -->
+    {% include '_view_invited_modal.html' %}
     
     <!-- Include the week results modal -->
     {% include '_week_results_modal.html' %}
@@ -111,5 +114,6 @@
         const saveSlots = {{ save_slots | tojson }};
     </script>
     <script src="/static/save_modal.js"></script>
+    <script src="/static/view_invited_modal.js"></script>
 </body>
 </html>

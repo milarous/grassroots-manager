@@ -78,6 +78,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Random walk-ins still added to contacts list
   - Week results message shows both invited players and walk-ins separately
 - **CalendarEvent class extended with `invited_contacts` list attribute**
+- **"View Invited Players" modal UI has been updated to match the design of the week results modal**
+- **Calendar icon has been restored to the upcoming training list**
 
 ### Fixed
 - Player source badge width inconsistency across contacts
@@ -129,7 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Legacy save compatibility for facilities and competitions
 
-## [0.1.0] - 2025-01-21
+## [01.1.0] - 2025-01-21
 
 ### Added
 - 3-slot save/load system with pickle persistence
