@@ -1,32 +1,27 @@
-<!-- Save Game Modal - Include this in any page that needs save functionality -->
-<!-- Requires: save_slots variable to be passed from Flask -->
-<!-- Requires: static/save_modal.js to be included in the page -->
-
 <div id="saveModal" class="modal">
     <div class="modal-content">
-        <h3>Save Game</h3>
-        <p class="modal-description">Select a slot to overwrite or create a new save</p>
+        <h2>Save Game</h2>
+        <p class="modal-description">Choose a slot to save your current progress.</p>
         
-        <div id="slotSelectionStep">
-            <div class="slot-buttons" id="slotButtonsContainer">
-                <!-- Slots will be populated via JavaScript -->
-            </div>
+        <div id="saveSlotsContainer" class="slot-buttons">
+            <!-- Slots will be dynamically inserted here -->
+        </div>
+
+        <div id="saveForm" class="hidden" style="margin-top: 20px;">
+            <form method="POST" id="saveGameForm">
+                <div class="form-group">
+                    <label for="saveLabel">Save Label:</label>
+                    <input type="text" id="saveLabel" name="label" class="form-control" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-confirm">Confirm Save</button>
+                    <button type="button" class="btn-back" onclick="showSaveSlots()">Back</button>
+                </div>
+            </form>
         </div>
         
-        <div id="labelConfirmStep" class="hidden">
-            <div id="selectedSlotInfo" class="modal-info-box">
-                <!-- Selected slot info will be shown here -->
-            </div>
-            <div class="modal-form-row">
-                <label for="saveLabel">Save Label:</label>
-                <input type="text" id="saveLabel" name="label" placeholder="Enter a name for this save">
-            </div>
-        </div>
-        
-        <div class="modal-buttons">
-            <button id="backBtn" onclick="backToSlotSelection()" class="btn-back hidden">Back</button>
-            <button id="confirmBtn" onclick="confirmSave()" class="btn-confirm hidden">Confirm Save</button>
-            <button onclick="closeSaveModal()" class="btn-cancel">Cancel</button>
+        <div class="modal-buttons" style="margin-top: 20px;">
+            <button class="cancel" onclick="closeSaveModal()">Close</button>
         </div>
     </div>
 </div>

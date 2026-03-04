@@ -25,42 +25,37 @@
     <div class="header">
         <h1>Club Overview</h1>
         {% if club %}
-        <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
+            <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
         {% endif %}
     </div>
-    
+
     <div class="container">
         {% include '_game_menu.html' %}
-        
+
         <div class="right-content">
-            {% if club %}
-            <div class="club-info">Club: {{ club.name }}
-City: {{ club.city }}
-Country: {{ club.country }}
-Finances: ${{ club.finances }}
-Reputation: {{ club.reputation }}
-Facilities: {% if club.facility %}{{ club.facility.name }} (${{ club.facility.monthly_cost }}/month){% else %}None{% endif %}
-Competition: {{ club.competition }}</div>
-            {% else %}
-            <p>No club created yet. Please start a new season.</p>
-            {% endif %}
+
+            <h2>Welcome to {{ club.name if club else "Your Club" }}</h2>
+            <p>This is your central hub for managing your grassroots football club. From here, you can oversee your squad, finances, facilities, and more.</p>
+
+            <pre class="club-summary">{{ club.get_summary() }}</pre>
         </div>
     </div>
-    
+
     <footer>
         <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
     </footer>
-    
+
     <!-- Include the reusable save modal -->
     {% include '_save_modal.html' %}
-    
+
     <!-- Include the week results modal -->
     {% include '_week_results_modal.html' %}
-    
+
     <script src="/static/burger_menu.js"></script>
     <script>
         const saveSlots = {{ save_slots | tojson }};
     </script>
     <script src="/static/save_modal.js"></script>
+    <script src="/static/modal_handler.js"></script>
 </body>
 </html>

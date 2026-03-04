@@ -80,6 +80,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CalendarEvent class extended with `invited_contacts` list attribute**
 - **"View Invited Players" modal UI has been updated to match the design of the week results modal**
 - **Calendar icon has been restored to the upcoming training list**
+- **Cosmetic UI Updates:**
+    - Restored the soccer ball (⚽) emoji to the "Open Training Night" title.
+    - Restored the calendar (📅) emoji to the player count indicators for upcoming and recent training events.
+    - Updated the "Open Training Night" cost display from "$0" to "Free" for consistency.
+    - Added the potential player effect (0-5 players) to the "Open Training Night" description.
 
 ### Fixed
 - Player source badge width inconsistency across contacts
@@ -88,6 +93,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Routing issue where training confirmations appeared on wrong page**
   - Training events now correctly redirect to Training page
   - Marketing events redirect to Marketing page
+- **New Game Bug:** Corrected an issue where the `available_players` list was not cleared when starting a new game, causing contacts from a previous session to persist.
+- **"View" Button Functionality:** Resolved an issue with the "View" buttons for recent and upcoming training events, which were not working due to a JavaScript parsing error.
+- **Confirmation Banner Styling:** Fixed inconsistent styling for flash messages on the `training.html` page to match the styling on the `marketing.html` page.
+
 
 ## [0.3.0] - 2025-01-25
 

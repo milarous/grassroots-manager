@@ -1,9 +1,9 @@
 <div class="left-menu">
-    <a href="/club" class="menu-button {% if current_page == 'club' %}active{% endif %}">Club Overview</a>
-    <a href="/calendar" class="menu-button {% if current_page == 'calendar' %}active{% endif %}">Calendar</a>
-    <a href="/squad" class="menu-button {% if current_page == 'squad' %}active{% endif %}">Squad</a>
-    <a href="/training" class="menu-button {% if current_page == 'training' %}active{% endif %}">Training</a>
-    <a href="/marketing" class="menu-button {% if current_page == 'marketing' %}active{% endif %}">Marketing</a>
-    <a href="/facilities" class="menu-button {% if current_page == 'facilities' %}active{% endif %}">Facilities</a>
-    <a href="/competitions" class="menu-button {% if current_page == 'competitions' %}active{% endif %}">Competitions</a>
+    <a href="{{ url_for('club_overview') }}" class="menu-button {% if current_page == 'club' %}active{% endif %}">Club Overview</a>
+    <a href="{{ url_for('squad_view') }}" class="menu-button {% if current_page == 'squad' %}active{% endif %}">Squad</a>
+    <a href="{{ url_for('training_view') }}" class="menu-button {% if current_page == 'training' %}active{% endif %}">Training</a>
+    <a href="{{ url_for('marketing_view') }}" class="menu-button {% if current_page == 'marketing' %}active{% endif %}">Marketing</a>
+    <a href="{{ url_for('calendar_view') }}" class="menu-button {% if current_page == 'calendar' %}active{% endif %}">Calendar</a>
+    <a href="{{ url_for('facilities_view') }}" class="menu-button {% if current_page == 'facilities' %}active{% endif %}">Facilities</a>
+    <a href="{{ url_for('competitions_view') }}" class="menu-button {% if current_page == 'competitions' %}active{% endif %}">Competitions</a>
 </div>

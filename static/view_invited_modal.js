@@ -1,17 +1,18 @@
-function openViewInvitedModal(invitedContacts) {
-    const modal = document.getElementById('viewInvitedModal');
-    const list = document.getElementById('invitedPlayersList');
+const viewInvitedModal = document.getElementById('viewInvitedModal');
+const invitedList = document.getElementById('invited-list');
+const invitedModalTitle = document.getElementById('view-invited-title');
 
-    // Clear previous list
-    list.innerHTML = '';
+function openViewInvitedModal(invitedContacts, eventName, eventWeek, eventYear) {
+    invitedList.innerHTML = ''; // Clear previous list
 
-    // Populate the list with invited players
-    if (invitedContacts && invitedContacts.length > 0) {
+    // Set modal title
+    invitedModalTitle.textContent = `${eventName} (Week ${eventWeek}, ${eventYear})`;
+
+    if (Array.isArray(invitedContacts) && invitedContacts.length > 0) {
         invitedContacts.forEach(player => {
-            const listItem = document.createElement('div');
-            listItem.className = 'week-result-item';
+            const listItem = document.createElement('li');
+            listItem.className = 'contact-item';
 
-            // Create a badge for the source using the correct class
             const sourceBadge = player.source ? `<span class="player-source">${player.source}</span>` : '';
 
             listItem.innerHTML = `
@@ -23,26 +24,17 @@ function openViewInvitedModal(invitedContacts) {
                     </div>
                 </div>
             `;
-            list.appendChild(listItem);
+            invitedList.appendChild(listItem);
         });
     } else {
-        const noPlayersMessage = document.createElement('p');
+        const noPlayersMessage = document.createElement('li');
         noPlayersMessage.textContent = 'No players have been invited to this event yet.';
-        list.appendChild(noPlayersMessage);
+        invitedList.appendChild(noPlayersMessage);
     }
 
-    modal.style.display = 'block';
+    viewInvitedModal.classList.add('show');
 }
 
 function closeViewInvitedModal() {
-    const modal = document.getElementById('viewInvitedModal');
-    modal.style.display = 'none';
-}
-
-// Close the modal if the user clicks outside of it
-window.onclick = function(event) {
-    const modal = document.getElementById('viewInvitedModal');
-    if (event.target == modal) {
-        closeViewInvitedModal();
-    }
+    viewInvitedModal.classList.remove('show');
 }

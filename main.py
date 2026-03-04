@@ -73,6 +73,7 @@ class CalendarEvent:
         self.year = year
         self.notes = notes
         self.invited_contacts = []  # List of player dictionaries invited to this event
+        self.attendees = [] # List of players who attended the event
 
     def __str__(self):
         return f"{self.name} (Week {self.week}, {self.year})"
@@ -141,17 +142,7 @@ def load_game(slot):
             save_data = pickle.load(f)
             club = save_data['club']
             available_players = save_data['available_players']
-            # Ensure legacy saves without Competition objects reset to None
-            if club and not isinstance(getattr(club, 'competition', None), Competition):
-                club.competition = None
-            # Ensure legacy saves have week and year attributes
-            if club and not hasattr(club, 'week'):
-                club.week = 1
-            if club and not hasattr(club, 'year'):
-                club.year = 2026
-            # Ensure legacy saves have calendar_events attribute
-            if club and not hasattr(club, 'calendar_events'):
-                club.calendar_events = []
+            migrate_save_data(club) # This will fix the save data
         return True
     except FileNotFoundError:
         return False
@@ -173,7 +164,7 @@ def get_save_slots():
                         formatted_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
                     else:
                         formatted_time = 'Unknown'
-                    
+
                     # Get club info for display
                     saved_club = save_data.get('club')
                     club_info = None
@@ -184,7 +175,7 @@ def get_save_slots():
                             week = getattr(saved_club, 'week', 1)
                             year = getattr(saved_club, 'year', 2026)
                             game_date = f"Week {week}, {year}"
-                            
+
                             facility_info = None
                             if saved_club.facility:
                                 facility_info = {
@@ -203,7 +194,7 @@ def get_save_slots():
                         except:
                             # If there's an error accessing club attributes, set to None
                             club_info = None
-                    
+
                     slots[str(i)] = {
                         'exists': True,
                         'label': label,
@@ -224,19 +215,63 @@ def get_save_slots():
             slots[str(i)] = {'exists': False, 'label': '', 'timestamp': '', 'game_date': '', 'club_info': None}
     return slots
 
+def migrate_save_data(club):
+    """Corrects data inconsistencies in loaded save files."""
+    if not club:
+        return
+
+    # Ensure legacy saves have necessary attributes
+    if not hasattr(club, 'competition'):
+        club.competition = None
+    if not hasattr(club, 'week'):
+        club.week = 1
+    if not hasattr(club, 'year'):
+        club.year = 2026
+    if not hasattr(club, 'calendar_events'):
+        club.calendar_events = []
+
+    # Correct training event attendees and invited contacts
+    for event in club.calendar_events:
+        if event.event_type == 'training':
+            # Ensure lists exist
+            if not hasattr(event, 'attendees'):
+                event.attendees = []
+            if not hasattr(event, 'invited_contacts'):
+                event.invited_contacts = []
+
+            # Convert Player objects to dictionaries for consistency
+            event.attendees = [
+                {
+                    'name': p.name,
+                    'age': p.age,
+                    'position': p.position,
+                    'skill_level': p.skill_level,
+                    'source': p.source
+                } if isinstance(p, Player) else p for p in event.attendees
+            ]
+            event.invited_contacts = [
+                {
+                    'name': p.name,
+                    'age': p.age,
+                    'position': p.position,
+                    'skill_level': p.skill_level,
+                    'source': p.source
+                } if isinstance(p, Player) else p for p in event.invited_contacts
+            ]
+
 def generate_random_player(source=None):
     """Generate a random player for recruitment"""
     import random
-    
+
     first_names = ["John", "Mike", "David", "James", "Robert", "William", "Thomas", "Daniel", "Matthew", "Joseph"]
     last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"]
-    
+
     name = f"{random.choice(first_names)} {random.choice(last_names)}"
     age = random.randint(18, 35)
     positions = ["Forward", "Midfielder", "Defender", "Goalkeeper"]
     position = random.choice(positions)
     skill_level = random.randint(1, 5)  # Start with lower skilled players for grassroots
-    
+
     return Player(name, age, position, skill_level, source)
 
 def scout_players():
@@ -253,12 +288,13 @@ def main_menu():
 
 @app.route('/create_club', methods=['POST'])
 def create_club():
-    global club
+    global club, available_players
     club_name = request.form.get('club_name')
     country = request.form.get('country')
     city = request.form.get('city')
-    
+
     club = Club(club_name, city, country)
+    available_players = []  # Reset available players
     return redirect(url_for('club_overview'))
 
 @app.route('/club')
@@ -282,15 +318,54 @@ def training_view():
     if club is None:
         return redirect(url_for('main_menu'))
     save_slots = get_save_slots()
-    
-    # Get upcoming training events
+
+    # Get upcoming and recent training events
     upcoming_training_events = []
+    recent_training_events = []
     if hasattr(club, 'calendar_events'):
+        current_time = club.year * 52 + club.week
         for event in club.calendar_events:
             if event.event_type == 'training':
-                upcoming_training_events.append(event)
-    
-    return render_template('training.html', club=club, save_slots=save_slots, current_page='training', upcoming_training_events=upcoming_training_events)
+                # Sanitize attendees and invited_contacts to be lists of dicts
+                if hasattr(event, 'attendees') and event.attendees:
+                    event.attendees = [
+                        {
+                            'name': p.name, 'age': p.age, 'position': p.position,
+                            'skill_level': p.skill_level, 'source': p.source
+                        } if isinstance(p, Player) else p
+                        for p in event.attendees
+                    ]
+                
+                if hasattr(event, 'invited_contacts') and event.invited_contacts:
+                    event.invited_contacts = [
+                        {
+                            'name': p.name, 'age': p.age, 'position': p.position,
+                            'skill_level': p.skill_level, 'source': p.source
+                        } if isinstance(p, Player) else p
+                        for p in event.invited_contacts
+                    ]
+
+                event_time = event.year * 52 + event.week
+                if event_time >= current_time:
+                    upcoming_training_events.append(event)
+                else:
+                    # Check if the event is within the last 4 weeks
+                    if current_time - event_time <= 4:
+                        event.disappears_in = 4 - (current_time - event_time)
+                        recent_training_events.append(event)
+
+    # Sort upcoming events by the closest first
+    upcoming_training_events.sort(key=lambda x: x.year * 52 + x.week)
+
+    # Sort recent events by the most recent first
+    recent_training_events.sort(key=lambda x: x.year * 52 + x.week, reverse=True)
+
+    return render_template('training.html',
+                           club=club,
+                           save_slots=save_slots,
+                           current_page='training',
+                           upcoming_training_events=upcoming_training_events,
+                           recent_training_events=recent_training_events)
 
 @app.route('/marketing')
 def marketing_view():
@@ -303,20 +378,20 @@ def marketing_view():
 def advertise(method):
     if club is None:
         return redirect(url_for('main_menu'))
-    
+
     # Ensure calendar_events attribute exists (for legacy saves)
     if not hasattr(club, 'calendar_events'):
         club.calendar_events = []
-    
+
     week_offset = int(request.form.get('week_offset', 0))
     target_week = club.week + week_offset
     target_year = club.year
-    
+
     # Handle year rollover
     if target_week > 52:
         target_week -= 52
         target_year += 1
-    
+
     # Map advertising method names to display names and event types
     method_info = {
         'flyers': {'name': 'Flyer Distribution', 'type': 'marketing', 'cost': 50},
@@ -324,18 +399,18 @@ def advertise(method):
         'radio': {'name': 'Radio Advertisement', 'type': 'marketing', 'cost': 250},
         'tv': {'name': 'TV Commercial', 'type': 'marketing', 'cost': 750}
     }
-    
+
     if method not in method_info:
         flash('Invalid advertising method!', 'error')
         return redirect(url_for('marketing_view'))
-    
+
     info = method_info[method]
-    
+
     # Check finances for paid methods
     if info['cost'] > 0 and club.finances < info['cost']:
         flash(f'Not enough funds! You need ${info["cost"]} but only have ${club.finances}.', 'error')
         return redirect(url_for('marketing_view'))
-    
+
     # Create calendar event with metadata
     event = CalendarEvent(
         name=info['name'],
@@ -344,48 +419,48 @@ def advertise(method):
         year=target_year,
         notes=f"advertising:{method}"  # Store the method type in notes for execution
     )
-    
+
     club.calendar_events.append(event)
-    
+
     week_display = f"week {target_week}" if week_offset == 0 else f"week {target_week} ({week_offset} week{'s' if week_offset > 1 else ''} from now)"
     flash(f'{info["name"]} scheduled for {week_display}!', 'success')
-    
+
     return redirect(url_for('marketing_view'))
 
 @app.route('/schedule_training/<method>', methods=['POST'])
 def schedule_training(method):
     if club is None:
         return redirect(url_for('main_menu'))
-    
+
     # Ensure calendar_events attribute exists (for legacy saves)
     if not hasattr(club, 'calendar_events'):
         club.calendar_events = []
-    
+
     week_offset = int(request.form.get('week_offset', 0))
     target_week = club.week + week_offset
     target_year = club.year
-    
+
     # Handle year rollover
     if target_week > 52:
         target_week -= 52
         target_year += 1
-    
+
     # Map training method names to display names and costs
     training_info = {
         'open_training': {'name': 'Open Training Night', 'cost': 0}
     }
-    
+
     if method not in training_info:
         flash('Invalid training method!', 'error')
         return redirect(url_for('training_view'))
-    
+
     info = training_info[method]
-    
+
     # Check finances for paid methods
     if info['cost'] > 0 and club.finances < info['cost']:
         flash(f'Not enough funds! You need ${info["cost"]} but only have ${club.finances}.', 'error')
         return redirect(url_for('training_view'))
-    
+
     # Create calendar event with metadata
     event = CalendarEvent(
         name=info['name'],
@@ -394,12 +469,12 @@ def schedule_training(method):
         year=target_year,
         notes=f"training:{method}"  # Store the method type in notes for execution
     )
-    
+
     club.calendar_events.append(event)
-    
+
     week_display = f"week {target_week}" if week_offset == 0 else f"week {target_week} ({week_offset} week{'s' if week_offset > 1 else ''} from now)"
     flash(f'{info["name"]} scheduled for {week_display}!', 'success')
-    
+
     return redirect(url_for('training_view'))
 
 @app.route('/scout_players')
@@ -422,14 +497,14 @@ def recruit_player(player_index):
 def invite_to_training(player_index):
     if club is None:
         return {'success': False, 'error': 'No club'}, 400
-    
+
     global available_players
     if 0 <= player_index < len(available_players):
         # Get upcoming training sessions
-        upcoming_training = [event for event in club.calendar_events 
-                           if event.event_type == 'training' 
+        upcoming_training = [event for event in club.calendar_events
+                           if event.event_type == 'training'
                            and (event.year > club.year or (event.year == club.year and event.week >= club.week))]
-        
+
         # Return player info and training sessions
         player = available_players[player_index]
         training_sessions = [
@@ -441,7 +516,7 @@ def invite_to_training(player_index):
             }
             for i, event in enumerate(upcoming_training)
         ]
-        
+
         return {
             'success': True,
             'player': {
@@ -450,28 +525,28 @@ def invite_to_training(player_index):
             },
             'training_sessions': training_sessions
         }
-    
+
     return {'success': False, 'error': 'Invalid player index'}, 400
 
 @app.route('/add_contact_to_training/<int:player_index>/<int:training_index>', methods=['POST'])
 def add_contact_to_training(player_index, training_index):
     if club is None:
         return {'success': False, 'error': 'No club'}, 400
-    
+
     global available_players
     if 0 <= player_index < len(available_players):
         # Get upcoming training sessions
-        upcoming_training = [event for event in club.calendar_events 
-                           if event.event_type == 'training' 
+        upcoming_training = [event for event in club.calendar_events
+                           if event.event_type == 'training'
                            and (event.year > club.year or (event.year == club.year and event.week >= club.week))]
-        
+
         if 0 <= training_index < len(upcoming_training):
             player = available_players.pop(player_index)
-            
+
             # Ensure the event has invited_contacts list (for legacy saves)
             if not hasattr(upcoming_training[training_index], 'invited_contacts'):
                 upcoming_training[training_index].invited_contacts = []
-            
+
             # Add player to the training session's invited contacts
             upcoming_training[training_index].invited_contacts.append({
                 'name': player.name,
@@ -480,12 +555,12 @@ def add_contact_to_training(player_index, training_index):
                 'skill_level': player.skill_level,
                 'source': player.source
             })
-            
+
             flash(f'{player.name} has been invited to {upcoming_training[training_index].name} (Week {upcoming_training[training_index].week})!', 'success')
             return {'success': True}
-        
+
         return {'success': False, 'error': 'Invalid training index'}, 400
-    
+
     return {'success': False, 'error': 'Invalid player index'}, 400
 
 @app.route('/remove_contact/<int:player_index>', methods=['POST'])
@@ -493,30 +568,30 @@ def remove_contact(player_index):
     """Remove a contact from the available players list (e.g., for wrong number or not interested)"""
     if club is None:
         return {'success': False, 'error': 'No club'}, 400
-    
+
     global available_players
     if 0 <= player_index < len(available_players):
         reason = request.args.get('reason', 'disconnected')
         removed_player = available_players.pop(player_index)
-        
+
         if reason == 'not_interested':
             flash(f'{removed_player.name} was not interested and has been removed from contacts.', 'info')
         else:  # disconnected or any other reason
-            flash(f'{removed_player.name}\'s contact has been removed (disconnected number).', 'info')
-        
+            flash(f"{removed_player.name}'s contact has been removed (disconnected number).", 'info')
+
         return {'success': True}
-    
+
     return {'success': False, 'error': 'Invalid player index'}, 400
 
 @app.route('/calendar')
 def calendar_view():
     if club is None:
         return redirect(url_for('main_menu'))
-    
+
     # Ensure calendar_events attribute exists (for legacy saves)
     if not hasattr(club, 'calendar_events'):
         club.calendar_events = []
-    
+
     # Convert calendar events to dictionaries for JSON serialization
     events_data = [
         {
@@ -528,7 +603,7 @@ def calendar_view():
         }
         for event in club.calendar_events
     ]
-    
+
     save_slots = get_save_slots()
     return render_template('calendar.html', club=club, calendar_events=events_data, save_slots=save_slots, current_page='calendar', event_colors=EVENT_COLORS)
 
@@ -536,12 +611,12 @@ def calendar_view():
 def add_calendar_event():
     if club is None:
         return {'error': 'No club'}, 400
-    
+
     data = request.get_json()
-    
+
     if not data or not all(k in data for k in ('name', 'event_type', 'week', 'year')):
         return {'error': 'Missing required fields'}, 400
-    
+
     event = CalendarEvent(
         name=data['name'],
         event_type=data['event_type'],
@@ -549,7 +624,7 @@ def add_calendar_event():
         year=data['year'],
         notes=data.get('notes', '')
     )
-    
+
     club.calendar_events.append(event)
     return {'success': True}, 200
 
@@ -607,19 +682,19 @@ def leave_competition():
 def next_week():
     if club is None:
         return redirect(url_for('main_menu'))
-    
+
     import random
-    
+
     week_results = []
-    
+
     # Execute all scheduled events for the current week
     events_to_execute = [e for e in club.calendar_events if e.week == club.week and e.year == club.year]
-    
+
     for event in events_to_execute:
         # Handle advertising events
         if event.notes and event.notes.startswith('advertising:'):
             method = event.notes.split(':')[1]
-            
+
             if method == 'flyers':
                 # Deduct cost
                 club.finances -= 50
@@ -630,7 +705,7 @@ def next_week():
                     week_results.append(f'📋 Flyers distributed: {num_players} player(s) showed interest (Cost: $50)')
                 else:
                     week_results.append('📋 Flyers distributed: No one showed interest (Cost: $50)')
-            
+
             elif method == 'social_media':
                 num_players = random.randint(0, club.reputation + 2)
                 if num_players > 0:
@@ -639,7 +714,7 @@ def next_week():
                     week_results.append(f'📣 Social media post: {num_players} player(s) responded')
                 else:
                     week_results.append('📣 Social media post: No responses yet')
-            
+
             elif method == 'radio':
                 # Deduct cost
                 club.finances -= 250
@@ -647,7 +722,7 @@ def next_week():
                 for _ in range(num_players):
                     available_players.append(generate_random_player('Radio Ad'))
                 week_results.append(f'📻 Radio advertisement: {num_players} player(s) showed interest (Cost: $250)')
-            
+
             elif method == 'tv':
                 # Deduct cost
                 club.finances -= 750
@@ -655,18 +730,19 @@ def next_week():
                 for _ in range(num_players):
                     available_players.append(generate_random_player('TV Commercial'))
                 week_results.append(f'📺 TV commercial: {num_players} player(s) showed interest (Cost: $750)')
-        
+
         # Handle training events
         elif event.notes and event.notes.startswith('training:'):
             method = event.notes.split(':')[1]
-            
+
             if method == 'open_training':
-                # Ensure invited_contacts exists (for legacy saves)
+                if not hasattr(event, 'attendees'):
+                    event.attendees = []
                 if not hasattr(event, 'invited_contacts'):
                     event.invited_contacts = []
-                
-                # Add invited contacts to the squad
-                invited_count = len(event.invited_contacts)
+
+                # Process invited contacts
+                newly_signed_players = []
                 for contact in event.invited_contacts:
                     player = Player(
                         name=contact['name'],
@@ -676,23 +752,42 @@ def next_week():
                         source=contact.get('source', 'Open Training')
                     )
                     club.squad.append(player)
+                    newly_signed_players.append(player)
+
+                # Reset invited contacts after processing
+                event.invited_contacts = []
+
+                # Log all newly signed players as attendees
+                event.attendees.extend([{
+                    'name': p.name, 'age': p.age, 'position': p.position,
+                    'skill_level': p.skill_level, 'source': p.source
+                } for p in newly_signed_players])
+
+                # Add random walk-ins
+                num_walkins = random.randint(0, 5)
+                walkin_players = []
+                if num_walkins > 0:
+                    for _ in range(num_walkins):
+                        player = generate_random_player('Open Training')
+                        available_players.append(player)
+                        walkin_players.append(player)
                 
-                # Also add random walk-ins
-                num_players = random.randint(0, 5)
-                if num_players > 0:
-                    for _ in range(num_players):
-                        available_players.append(generate_random_player('Open Training'))
-                
+                # Log walk-ins as attendees
+                event.attendees.extend([{
+                    'name': p.name, 'age': p.age, 'position': p.position,
+                    'skill_level': p.skill_level, 'source': p.source
+                } for p in walkin_players])
+
                 # Build results message
-                if invited_count > 0 and num_players > 0:
-                    week_results.append(f'⚽ Open training night: {invited_count} invited player(s) joined the squad, {num_players} walk-in(s) showed interest')
-                elif invited_count > 0:
-                    week_results.append(f'⚽ Open training night: {invited_count} invited player(s) joined the squad')
-                elif num_players > 0:
-                    week_results.append(f'⚽ Open training night: {num_players} walk-in player(s) showed interest')
+                if newly_signed_players and walkin_players:
+                    week_results.append(f'⚽ Open training night: {len(newly_signed_players)} invited player(s) joined the squad, {len(walkin_players)} walk-in(s) showed interest')
+                elif newly_signed_players:
+                    week_results.append(f'⚽ Open training night: {len(newly_signed_players)} invited player(s) joined the squad')
+                elif walkin_players:
+                    week_results.append(f'⚽ Open training night: {len(walkin_players)} walk-in(s) showed interest')
                 else:
                     week_results.append('⚽ Open training night: No one showed up')
-    
+
     # Word of mouth: Passive player attraction based on reputation
     if random.random() < (club.reputation * 0.05):  # 5% per reputation point
         num_players = random.randint(0, max(1, club.reputation))
@@ -700,16 +795,16 @@ def next_week():
             for _ in range(num_players):
                 available_players.append(generate_random_player('Word of Mouth'))
             week_results.append(f'💬 Word of mouth: {num_players} player(s) attracted')
-    
+
     club.week += 1
     if club.week > 52:
         club.week = 1
         club.year += 1
-    
+
     # Store results in session for the popup
     from flask import session
     session['week_results'] = week_results
-    
+
     return redirect(url_for('club_overview'))
 
 @app.route('/clear_week_results', methods=['POST'])

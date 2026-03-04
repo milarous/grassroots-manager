@@ -1,118 +1,84 @@
-// Save Modal functionality - can be included in any template
-
 let selectedSlot = null;
 
-function initializeSaveModal() {
-    const container = document.getElementById('slotButtonsContainer');
-    if (!container || !saveSlots) return;
-    
-    container.innerHTML = '';
-    
-    for (let slot = 1; slot <= 3; slot++) {
-        const slotData = saveSlots[slot.toString()];
+// Opens the save modal and shows the initial slot selection
+function openSaveModal() {
+    const modal = document.getElementById('saveModal');
+    const slotsContainer = document.getElementById('saveSlotsContainer');
+    const saveForm = document.getElementById('saveForm');
+
+    // Ensure we have the global saveSlots variable
+    if (typeof saveSlots === 'undefined') {
+        console.error("saveSlots is not defined. Make sure it's included in the page.");
+        return;
+    }
+
+    // Clear previous slot buttons
+    slotsContainer.innerHTML = '';
+
+    // Create buttons for each slot
+    for (let i = 1; i <= 3; i++) {
+        const slot = i.toString();
+        const slotData = saveSlots[slot];
         const button = document.createElement('button');
-        button.type = 'button';
         button.className = 'slot-btn';
-        button.onclick = () => selectSlot(slot);
+        button.onclick = () => showSaveForm(i);
         
-        let buttonText = `Slot ${slot}`;
-        if (slotData.exists) {
+        let buttonText = `Slot ${i}`;
+        if (slotData && slotData.exists) {
             buttonText += ` - ${slotData.label}`;
         } else {
             buttonText += ' (Empty)';
         }
-        
-        button.innerHTML = buttonText;
-        container.appendChild(button);
+        button.textContent = buttonText;
+        slotsContainer.appendChild(button);
     }
+
+    // Show slot selection and hide the form
+    slotsContainer.classList.remove('hidden');
+    saveForm.classList.add('hidden');
+    
+    // Show the modal
+    modal.classList.add('show');
 }
 
-function selectSlot(slot) {
+// Hides the slot selection and shows the save form for a specific slot
+function showSaveForm(slot) {
     selectedSlot = slot;
-    const slotData = saveSlots[slot.toString()];
-    
-    // Update UI to show label/confirm step
-    document.getElementById('slotSelectionStep').classList.add('hidden');
-    document.getElementById('labelConfirmStep').classList.remove('hidden');
-    document.getElementById('backBtn').classList.remove('hidden');
-    document.getElementById('confirmBtn').classList.remove('hidden');
-    
-    // Show selected slot details
-    let infoHtml = `<strong>${slotData.exists ? 'Overwriting' : 'Creating new save in'} Slot ${slot}</strong><br>`;
-    
-    if (slotData.exists) {
-        infoHtml += `<br><strong>Current Save:</strong><br>`;
-        infoHtml += `Label: ${slotData.label}<br>`;
-        infoHtml += `Game Progress: ${slotData.game_date}<br>`;
-        infoHtml += `Save Time: ${slotData.timestamp}<br>`;
-        if (slotData.club_info) {
-            infoHtml += `Club: ${slotData.club_info.name}<br>`;
-            infoHtml += `Location: ${slotData.club_info.city}, ${slotData.club_info.country}<br>`;
-            infoHtml += `Finances: $${slotData.club_info.finances}<br>`;
-            infoHtml += `Reputation: ${slotData.club_info.reputation}<br>`;
-            if (slotData.club_info.facility) {
-                infoHtml += `Facility: ${slotData.club_info.facility.name} ($${slotData.club_info.facility.monthly_cost}/month)`;
-            } else {
-                infoHtml += `Facility: None`;
-            }
-        }
+    const slotsContainer = document.getElementById('saveSlotsContainer');
+    const saveForm = document.getElementById('saveForm');
+    const saveLabelInput = document.getElementById('saveLabel');
+    const saveGameForm = document.getElementById('saveGameForm');
+
+    const slotData = saveSlots[selectedSlot.toString()];
+
+    // Set the form's action
+    saveGameForm.action = `/save_game/${selectedSlot}`;
+
+    // Pre-fill the label if it exists
+    if (slotData && slotData.exists) {
+        saveLabelInput.value = slotData.label;
+    } else {
+        saveLabelInput.value = '';
     }
-    
-    document.getElementById('selectedSlotInfo').innerHTML = infoHtml;
-    document.getElementById('saveLabel').value = slotData.exists ? slotData.label : '';
-    document.getElementById('saveLabel').focus();
+
+    // Swap visibility
+    slotsContainer.classList.add('hidden');
+    saveForm.classList.remove('hidden');
+    saveLabelInput.focus();
 }
 
-function backToSlotSelection() {
-    selectedSlot = null;
-    document.getElementById('slotSelectionStep').classList.remove('hidden');
-    document.getElementById('labelConfirmStep').classList.add('hidden');
-    document.getElementById('backBtn').classList.add('hidden');
-    document.getElementById('confirmBtn').classList.add('hidden');
+// Hides the save form and shows the slot selection
+function showSaveSlots() {
+    const slotsContainer = document.getElementById('saveSlotsContainer');
+    const saveForm = document.getElementById('saveForm');
+
+    slotsContainer.classList.remove('hidden');
+    saveForm.classList.add('hidden');
 }
 
-function openSaveModal() {
-    initializeSaveModal();
-    backToSlotSelection();
-    document.getElementById('saveModal').classList.add('show');
-}
-
+// Closes the save modal
 function closeSaveModal() {
-    document.getElementById('saveModal').classList.remove('show');
-    selectedSlot = null;
-}
-
-function confirmSave() {
-    if (selectedSlot === null) {
-        alert('Please select a slot first');
-        return;
-    }
-    
-    const label = document.getElementById('saveLabel').value.trim();
-    if (!label) {
-        alert('Please enter a save label');
-        return;
-    }
-    
-    // Submit the save
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/save_game/' + selectedSlot;
-    
-    const labelInput = document.createElement('input');
-    labelInput.type = 'hidden';
-    labelInput.name = 'label';
-    labelInput.value = label;
-    
-    form.appendChild(labelInput);
-    document.body.appendChild(form);
-    form.submit();
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
     const modal = document.getElementById('saveModal');
-    if (modal && event.target === modal) {
-        closeSaveModal();
-    }
+    modal.classList.remove('show');
+    selectedSlot = null;
 }

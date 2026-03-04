@@ -146,8 +146,21 @@
                     {% endif %}
                 </div>
             </div>
+        </div>
+    </div>
     
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
+    
+    <!-- Include the reusable save modal -->
+    {% include '_save_modal.html' %}
+
+    <!-- Include the call modal -->
     {% include '_call_modal.html' %}
+    
+    <!-- Include the week results modal -->
+    {% include '_week_results_modal.html' %}
     
     <script src="/static/burger_menu.js"></script>
     <script>
@@ -155,5 +168,6 @@
     </script>
     <script src="/static/save_modal.js"></script>
     <script src="/static/call_modal.js"></script>
+    <script src="/static/modal_handler.js"></script>
 </body>
 </html>
