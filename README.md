@@ -56,7 +56,7 @@ A web-based football management simulation game built with Flask. Manage your gr
     - **Dynamic Contact Removal**: Contacts removed from list when number is disconnected or they decline invitation
 
 ### Calendar System
-- **52-Week Calendar**: Full-year interactive calendar view with color-coded event types
+- **52-Week Calendar**: Full-year interactive calendar view with a 4-column grid layout and color-coded event types.
 - **Event Types**: Match, Training, Meeting, Maintenance, Marketing
 - **Week Navigation**: Browse through all 52 weeks with year transitions
 - **Event Details**: View scheduled event information and notes
@@ -89,6 +89,7 @@ A web-based football management simulation game built with Flask. Manage your gr
 
 ### User Interface
 - **Modern Web Interface**: Clean, responsive HTML/CSS design with grid and flexbox layouts
+- **Brand Logo**: The Grassroots Manager logo is now displayed on the main menu page for improved branding.
 - **Light/Dark Mode Toggle**: Switch between light and dark themes with a toggle button in the footer
   - Theme preference is saved to browser localStorage
   - Smooth transitions between themes
@@ -135,6 +136,7 @@ Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game
 ### Playing the Game
 
 1. **Main Menu**:
+   - The main menu displays the game title and logo.
    - Click "Create Club" to start a new game
    - Click "Load Game" to continue from a saved slot
    - Click "Exit Game" to close
@@ -181,7 +183,7 @@ Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game
 
 6. **Calendar Management**:
    - Access the Calendar page from the left navigation menu
-   - View all 52 weeks of the year with color-coded events
+   - View all 52 weeks of the year with color-coded events in a 4-column grid.
    - Click on weeks to see event details
    - Events are automatically executed when you click "Next Week" from any page
    - Calendar events are persistent and save with your game
@@ -250,13 +252,15 @@ grassroots-manager/
 │   ├── _call_modal.html    # Phone call modal with speech bubbles and training selection
 │   └── _week_results_modal.html # Weekly event results popup
 │
-├── static/                 # Static assets (CSS and JavaScript)
+├── static/                 # Static assets (CSS, JavaScript, and images)
 │   ├── styles.css          # Main stylesheet with CSS custom properties for theming
 │   ├── theme_toggle.js     # Light/dark mode toggle functionality
 │   ├── burger_menu.js      # Burger menu toggle for Save/Return dropdown
 │   ├── save_modal.js       # Save modal functionality
 │   ├── load_modal.js       # Load modal functionality
-│   └── call_modal.js       # Phone call modal with training invitation system
+│   ├── call_modal.js       # Phone call modal with training invitation system
+│   └── Images/
+│       └── gm_logo.png     # Application logo
 │
 ├── saves/                  # Save game files (created automatically)
 │   └── slot_*.pkl          # Pickled save data files containing:

@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Accepts reason parameter (disconnected or not_interested)
   - Returns appropriate flash messages based on removal reason
   - Integrated with call modal for automatic cleanup
+- **Added `gm_logo.png` to the main menu page.**
 
 ### Changed
 - Improved marketing page layout with vertical card stacking
@@ -85,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Restored the calendar (📅) emoji to the player count indicators for upcoming and recent training events.
     - Updated the "Open Training Night" cost display from "$0" to "Free" for consistency.
     - Added the potential player effect (0-5 players) to the "Open Training Night" description.
+- **Redesigned the calendar page to a 4-column grid layout.**
 
 ### Fixed
 - Player source badge width inconsistency across contacts
