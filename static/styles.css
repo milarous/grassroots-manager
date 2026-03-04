@@ -727,6 +727,7 @@ footer {
     color: #856404;
     border: 1px solid #ffeaa7;
 }
+
 /* Calendar styles */
 .calendar-header {
     display: flex;
@@ -772,8 +773,8 @@ footer {
 }
 
 .calendar-grid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
     margin-bottom: 30px;
 }
@@ -785,6 +786,8 @@ footer {
     padding: 15px;
     min-height: 200px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
 }
 
 .week-card.current-week {
@@ -805,6 +808,7 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex-grow: 1;
 }
 
 .event {
