@@ -1,40 +1,36 @@
-const viewAttendanceModal = document.getElementById('viewAttendanceModal');
-const attendanceReportList = document.getElementById('attendance-list');
-const attendanceReportTitle = document.getElementById('view-attendance-title');
-
-function openViewAttendanceModal(attendees, eventName, eventWeek, eventYear) {
-    attendanceReportList.innerHTML = ''; // Clear previous content
-
-    // Set modal title
-    attendanceReportTitle.textContent = `${eventName} (Week ${eventWeek}, ${eventYear})`;
-
-    if (Array.isArray(attendees) && attendees.length > 0) {
-        attendees.forEach(player => {
-            const playerItem = document.createElement('li');
-            playerItem.classList.add('contact-item');
-
-            const sourceBadge = player.source ? `<span class="player-source">${player.source}</span>` : '';
-
-            playerItem.innerHTML = `
-                <div class="contact-info">
-                    <strong>${player.name}</strong>
-                    <div style="display: flex; align-items: center; margin-top: 4px;">
-                        <span class="contact-details">Age: ${player.age}</span>
-                        ${sourceBadge}
-                    </div>
-                </div>
-            `;
-            attendanceReportList.appendChild(playerItem);
-        });
-    } else {
-        const noPlayersItem = document.createElement('li');
-        noPlayersItem.textContent = 'No attendees to display.';
-        attendanceReportList.appendChild(noPlayersItem);
+function handleViewAttendance(buttonElement) {
+    try {
+        const attendees = JSON.parse(buttonElement.dataset.attendees);
+        const eventName = buttonElement.dataset.name;
+        const eventWeek = parseInt(buttonElement.dataset.week);
+        const eventYear = parseInt(buttonElement.dataset.year);
+        
+        openViewAttendanceModal(attendees, eventName, eventWeek, eventYear);
+    } catch (error) {
+        console.error('Error handling view attendance modal:', error);
+        alert('Failed to load attendance details. Please try again.');
     }
-
-    viewAttendanceModal.classList.add('show');
 }
 
-function closeViewAttendanceModal() {
-    viewAttendanceModal.classList.remove('show');
+function openViewAttendanceModal(attendees, eventName, eventWeek, eventYear) {
+    const modal = document.getElementById('viewAttendanceModal');
+    modal.querySelector('.modal-title').textContent = `${eventName} Attendance`;
+    
+    const contentEl = modal.querySelector('.modal-content-body');
+    contentEl.innerHTML = `
+        <h3>Week ${eventWeek}, ${eventYear}</h3>
+        <p>${attendees.length} player(s) attended</p>
+        <ul class="contacts-list">
+            ${attendees.map(player => `
+                <li class="contact-item">
+                    <div class="contact-info">
+                        <strong>${player.name}</strong>
+                        <span>Age: ${player.age}</span>
+                        ${player.skill_level ? `<span>Skill: ${player.skill_level}</span>` : ''}
+                    </div>
+                </li>`).join('')}
+        </ul>
+    `;
+
+    modal.style.display = 'block';
 }

@@ -90,10 +90,8 @@ A web-based football management simulation game built with Flask. Manage your gr
 ### User Interface
 - **Modern Web Interface**: Clean, responsive HTML/CSS design with grid and flexbox layouts
 - **Brand Logo**: The Grassroots Manager logo is now displayed on the main menu page for improved branding.
-- **Light/Dark Mode Toggle**: Switch between light and dark themes with a toggle button in the footer
-  - Theme preference is saved to browser localStorage
-  - Smooth transitions between themes
-  - Optimized colors for both modes with proper contrast
+- **Dark Mode Only**: The game now uses a dark theme exclusively for better visual comfort and reduced eye strain.
+- **ARIA Accessibility**: Enhanced UI with ARIA attributes for improved accessibility, including screen reader support and keyboard navigation.
 - **UI Polish**: The "View Invited Players" modal has been redesigned for a cleaner look, and the calendar icon has been restored to the upcoming training list for better visual clarity.
 - **Navigation Menu**: Easy-to-use left-side navigation menu on all game pages
   - Club Overview

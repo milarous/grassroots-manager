@@ -56,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Returns appropriate flash messages based on removal reason
   - Integrated with call modal for automatic cleanup
 - **Added `gm_logo.png` to the main menu page.**
+- **Dark Mode Only**: The game now uses a dark theme exclusively for better visual comfort and reduced eye strain.
+- **ARIA Accessibility**: Enhanced UI with ARIA attributes for improved accessibility, including screen reader support and keyboard navigation.
 
 ### Changed
 - Improved marketing page layout with vertical card stacking

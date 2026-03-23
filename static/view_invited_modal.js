@@ -1,40 +1,36 @@
-const viewInvitedModal = document.getElementById('viewInvitedModal');
-const invitedList = document.getElementById('invited-list');
-const invitedModalTitle = document.getElementById('view-invited-title');
-
-function openViewInvitedModal(invitedContacts, eventName, eventWeek, eventYear) {
-    invitedList.innerHTML = ''; // Clear previous list
-
-    // Set modal title
-    invitedModalTitle.textContent = `${eventName} (Week ${eventWeek}, ${eventYear})`;
-
-    if (Array.isArray(invitedContacts) && invitedContacts.length > 0) {
-        invitedContacts.forEach(player => {
-            const listItem = document.createElement('li');
-            listItem.className = 'contact-item';
-
-            const sourceBadge = player.source ? `<span class="player-source">${player.source}</span>` : '';
-
-            listItem.innerHTML = `
-                <div class="contact-info">
-                    <strong>${player.name}</strong>
-                    <div style="display: flex; align-items: center; margin-top: 4px;">
-                        <span class="contact-details">Age: ${player.age}</span>
-                        ${sourceBadge}
-                    </div>
-                </div>
-            `;
-            invitedList.appendChild(listItem);
-        });
-    } else {
-        const noPlayersMessage = document.createElement('li');
-        noPlayersMessage.textContent = 'No players have been invited to this event yet.';
-        invitedList.appendChild(noPlayersMessage);
+function handleViewInvited(buttonElement) {
+    try {
+        const invitedContacts = JSON.parse(buttonElement.dataset.invited);
+        const eventName = buttonElement.dataset.name;
+        const eventWeek = parseInt(buttonElement.dataset.week);
+        const eventYear = parseInt(buttonElement.dataset.year);
+        
+        openViewInvitedModal(invitedContacts, eventName, eventWeek, eventYear);
+    } catch (error) {
+        console.error('Error handling view invited modal:', error);
+        alert('Failed to load training event details. Please try again.');
     }
-
-    viewInvitedModal.classList.add('show');
 }
 
-function closeViewInvitedModal() {
-    viewInvitedModal.classList.remove('show');
+function openViewInvitedModal(invitedContacts, eventName, eventWeek, eventYear) {
+    // Existing modal opening logic here
+    const modal = document.getElementById('viewInvitedModal');
+    modal.querySelector('.modal-title').textContent = `${eventName} Invitees`;
+    
+    const contentEl = modal.querySelector('.modal-content-body');
+    contentEl.innerHTML = `
+        <h3>Week ${eventWeek}, ${eventYear}</h3>
+        <p>${invitedContacts.length} invited player(s)</p>
+        <ul class="contacts-list">
+            ${invitedContacts.map(player => `
+                <li class="contact-item">
+                    <div class="contact-info">
+                        <strong>${player.name}</strong>
+                        <span>Age: ${player.age}</span>
+                    </div>
+                </li>`).join('')}
+        </ul>
+    `;
+
+    modal.style.display = 'block';
 }

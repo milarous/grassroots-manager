@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketing</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <script src="/static/theme_toggle.js"></script>
+    <!-- Theme toggle removed for consistent dark theme -->
 </head>
-<body>
+<body class="dark-theme">
     <a href="/next_week" class="next-week-btn">Next Week</a>
 
     <div class="burger-menu">
@@ -137,7 +137,7 @@
                                     <span class="contact-details">Age: {{ player.age }}</span>
                                     {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
                                 </div>
-                                <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }}, '{{ club.name }}')" class="menu-button inline-small">Call</button>
+                                <button onclick="openCallModal(`{{ player.name }}`, {{ loop.index0 }}, `{{ club.name }}`)" class="menu-button inline-small">Call</button>
                             </li>
                         {% endfor %}
                         </ul>

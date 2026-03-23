@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Training Hub</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <script src="/static/theme_toggle.js"></script>
+    <!-- Theme toggle removed for consistent dark theme -->
 </head>
-<body>
+<body class="dark-theme">
     <a href="/next_week" class="next-week-btn">Next Week</a>
 
     <div class="burger-menu">
@@ -88,7 +88,7 @@
                                                     📅 {{ event.invited_contacts|length }} player(s) invited
                                                 </span>
                                             </div>
-                                            <button class="menu-button inline-small" onclick='openViewInvitedModal({{ event.invited_contacts|tojson|safe }}, "{{ event.name }}", {{ event.week }}, {{ event.year }})'>View</button>
+                                            <button class="menu-button inline-small" data-invited='{{ event.invited_contacts|tojson|safe }}' data-name="{{ event.name }}" data-week="{{ event.week }}" data-year="{{ event.year }}" onclick="handleViewInvited(this)">View</button>
                                         </li>
                                     {% endfor %}
                                     </ul>
@@ -117,7 +117,7 @@
                                                 </span>
                                             </div>
                                             {% if event.attendees %}
-                                                <button class="menu-button inline-small" onclick='openViewAttendanceModal({{ event.attendees|tojson|safe }}, "{{ event.name }}", {{ event.week }}, {{ event.year }})'>View</button>
+                                                <button class="menu-button inline-small" data-attendees='{{ event.attendees|tojson|safe }}' data-name="{{ event.name }}" data-week="{{ event.week }}" data-year="{{ event.year }}" onclick="handleViewAttendance(this)">View</button>
                                             {% endif %}
                                         </li>
                                     {% endfor %}
