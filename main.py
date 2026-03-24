@@ -772,24 +772,33 @@ def next_week():
                         age=contact['age'],
                         position=contact['position'],
                         skill_level=contact['skill_level'],
-                        source=contact.get('source', 'Open Training')
+                        source=f'Open Training: {event.name}'
                     )
-                    club.follow_up_players.append(player) # Add to follow up instead of squad
-
-                # Reset invited contacts after processing
-                event.invited_contacts = []
+                    club.follow_up_players.append(player)
+                    event.attendees.append(contact)
 
                 # Add random walk-ins
                 num_walkins = random.randint(0, 5)
                 for _ in range(num_walkins):
-                    player = generate_random_player('Open Training')
-                    club.follow_up_players.append(player) # Add to follow up instead of available contacts
+                    player = generate_random_player(f'Open Training: {event.name}')
+                    club.follow_up_players.append(player)
+                    # Add to attendees for stats
+                    event.attendees.append({
+                        'name': player.name,
+                        'age': player.age,
+                        'position': player.position,
+                        'skill_level': player.skill_level,
+                        'source': player.source
+                    })
+
+                # Reset invited contacts after processing
+                event.invited_contacts = []
 
                 # Build results message
-                if event.invited_contacts or num_walkins > 0:
-                    week_results.append(f'⚽ Open training night: Players are waiting in your follow-up section.')
+                if event.attendees:
+                    week_results.append(f'⚽ {event.name}: {len(event.attendees)} player(s) attended and are waiting in your follow-up section.')
                 else:
-                    week_results.append('⚽ Open training night: No one showed up')
+                    week_results.append(f'⚽ {event.name}: No one showed up')
 
     # Word of mouth: Passive player attraction based on reputation
     if random.random() < (club.reputation * 0.05):  # 5% per reputation point

@@ -158,10 +158,11 @@
                                         {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
                                     </div>
                                     <div class="follow-up-actions">
-                                        <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }}, '{{ club.name }}')" class="menu-button inline-small">Call</button>
-                                        <form action="/recruit_follow_up/{{ loop.index0 }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to ignore this player?');">
-                                            <button type="submit" name="action" value="ignore" class="menu-button inline-small" style="background-color: #e74c3c;">Ignore</button>
-                                        </form>
+                                    <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }}, '{{ club.name }}', '{{ player.source }}')" class="menu-button inline-small">Call</button>
+                                    <button onclick="confirmIgnore({{ loop.index0 }})" class="menu-button inline-small" style="background-color: #e74c3c;">Ignore</button>
+                                    <form id="ignoreForm-{{ loop.index0 }}" action="/recruit_follow_up/{{ loop.index0 }}" method="POST" style="display:none;">
+                                        <input type="hidden" name="action" value="ignore">
+                                    </form>
                                     </div>
                                 </li>
                             {% endfor %}

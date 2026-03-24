@@ -3,10 +3,11 @@
 let currentContact = null;
 let isWrongNumber = false;
 
-function openCallModal(playerName, playerIndex, clubName) {
+function openCallModal(playerName, playerIndex, clubName, playerSource) {
     currentContact = {
         name: playerName,
-        index: playerIndex
+        index: playerIndex,
+        isFromTraining: playerSource && playerSource.includes('Open Training')
     };
     
     const modal = document.getElementById('callModal');
@@ -16,36 +17,62 @@ function openCallModal(playerName, playerIndex, clubName) {
     const trainingSelection = document.getElementById('trainingSelection');
     const clubNameInButton = document.getElementById('clubNameInButton');
     
-    // 5% chance of wrong number
-    isWrongNumber = Math.random() < 0.05;
+    // Update message based on source
+    if (currentContact.isFromTraining) {
+        contactSpeech.textContent = `Hi, I'm calling from ${clubName}. Thanks so much for coming to our Open Training Session. I don't think we're the right club for you...`;
+        
+        // Add specific options for training followup
+        responseOptions.innerHTML = `
+            <button class="menu-button inline" onclick="recruitFromTraining()">Hi, I loved what I saw out there at the Open Training session, would you like to join our squad?</button>
+            <button class="menu-button inline" onclick="sayGoodbye()">No worries, thanks for your time.</button>
+        `;
+        
+        isWrongNumber = false; // Disable wrong number for training follow-up
+    } else {
+        // 5% chance of wrong number for regular contacts
+        isWrongNumber = Math.random() < 0.05;
+        
+        if (isWrongNumber) {
+            contactSpeech.textContent = `The number you have dialed has been disconnected.`;
+        } else {
+            contactSpeech.textContent = `Hello, ${playerName} speaking.`;
+            clubNameInButton.textContent = clubName;
+        }
+
+        // Add original options for normal contacts
+        responseOptions.innerHTML = `
+            <button class="menu-button inline" onclick="inviteToTraining()">Invite to Training</button>
+            <button class="menu-button inline" onclick="sayGoodbye()">Hang up</button>
+        `;
+    }
     
     // Hide all option sections initially
     responseOptions.style.display = 'none';
     farewellOptions.style.display = 'none';
     trainingSelection.style.display = 'none';
     
-    if (isWrongNumber) {
-        // Wrong number - show disconnected message
-        contactSpeech.textContent = `The number you have dialed has been disconnected.`;
-        
-        modal.classList.add('show');
-    } else {
-        // Normal call flow
-        isWrongNumber = false;
-        
-        // Display the greeting
-        contactSpeech.textContent = `Hello, ${playerName} speaking.`;
-        
-        // Set club name in button
-        clubNameInButton.textContent = clubName;
-        
-        modal.classList.add('show');
-        
-        // After a short delay, show response options
+    modal.classList.add('show');
+    
+    // After a short delay, show response options
+    if (!isWrongNumber) {
         setTimeout(() => {
             responseOptions.style.display = 'flex';
         }, 1500);
     }
+}
+
+function confirmIgnore(index) {
+    if (confirm('Are you sure you want to ignore this player?')) {
+        document.getElementById('ignoreForm-' + index).submit();
+    }
+}
+
+function recruitFromTraining() {
+    // Navigate to recruit
+    if (!currentContact) return;
+    document.getElementById('ignoreForm-' + currentContact.index).action = '/recruit_follow_up/' + currentContact.index;
+    document.getElementById('ignoreForm-' + currentContact.index).querySelector('input[name="action"]').value = 'recruit';
+    document.getElementById('ignoreForm-' + currentContact.index).submit();
 }
 
 function wrongNumber() {
@@ -67,6 +94,15 @@ function sayGoodbye() {
     
     // Mark for removal and close after a brief moment
     if (currentContact) {
+        // If from training, don't necessarily remove (though maybe we should?)
+        // The task implies recruitment or not. Let's just hang up for now.
+        if (currentContact.isFromTraining) {
+             setTimeout(() => {
+                hangUp();
+            }, 1000);
+            return;
+        }
+        
         fetch(`/remove_contact/${currentContact.index}?reason=not_interested`, {
             method: 'POST'
         })
