@@ -1,0 +1,3 @@
+Recently did the follow up section.
+When player went to training and routed to follow up, it said that no one went to training.
+There was one word of mouth attendee, they still went onto the contact list rather than follow up.

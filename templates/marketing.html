@@ -126,24 +126,50 @@
                 </div>
                 
                 <div class="marketing-right">
-                    <h2>Contacts</h2>
-                    
-                    {% if available_players %}
-                        <ul class="contacts-list">
-                        {% for player in available_players %}
-                            <li class="contact-item">
-                                <div class="contact-info">
-                                    <strong>{{ player.name }}</strong>
-                                    <span class="contact-details">Age: {{ player.age }}</span>
-                                    {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
-                                </div>
-                                <button onclick="openCallModal(`{{ player.name }}`, {{ loop.index0 }}, `{{ club.name }}`)" class="menu-button inline-small">Call</button>
-                            </li>
-                        {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No contacts yet. Use the advertising methods to attract players!</p>
-                    {% endif %}
+                    <div class="contacts-section">
+                        <h2>Contacts</h2>
+                        {% if available_players %}
+                            <ul class="contacts-list">
+                            {% for player in available_players %}
+                                <li class="contact-item">
+                                    <div class="contact-info">
+                                        <strong>{{ player.name }}</strong>
+                                        <span class="contact-details">Age: {{ player.age }}</span>
+                                        {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
+                                    </div>
+                                    <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }}, '{{ club.name }}')" class="menu-button inline-small">Call</button>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No contacts yet.</p>
+                        {% endif %}
+                    </div>
+                
+                    <div class="follow-up-section">
+                        <h2>Follow-up</h2>
+                        {% if club.follow_up_players %}
+                            <ul class="follow-up-list">
+                            {% for player in club.follow_up_players %}
+                                <li class="follow-up-item">
+                                    <div class="follow-up-info">
+                                        <strong>{{ player.name }}</strong>
+                                        <span class="follow-up-details">Age: {{ player.age }} | {{ player.position }} (Skill: {{ player.skill_level }})</span>
+                                        {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
+                                    </div>
+                                    <div class="follow-up-actions">
+                                        <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }}, '{{ club.name }}')" class="menu-button inline-small">Call</button>
+                                        <form action="/recruit_follow_up/{{ loop.index0 }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to ignore this player?');">
+                                            <button type="submit" name="action" value="ignore" class="menu-button inline-small" style="background-color: #e74c3c;">Ignore</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No players waiting for follow-up.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

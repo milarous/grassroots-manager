@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Follow-up player system**
+  - Players attending training no longer instantly join the squad
+  - Players now go to a 'Follow-up' list where position and skill are revealed
+  - Support for Calling (inviting/declining) and Ignoring players
+  - Walk-in players from training now go directly to Follow-up list
+  - Player source badges (e.g., 'TV Ad', 'Open Training') persist through to Follow-up
+- Marketing page UI update:
+  - Right-side column now shows 'Contacts' on top and 'Follow-up' on bottom
+  - Both sections have fixed 50% height with scrollbars
 - Radio Advertisement marketing option ($250, attracts 2-8 players)
 - TV Commercial marketing option ($750, attracts 5-15 players)
 - Light/Dark mode toggle with theme switcher button in footer

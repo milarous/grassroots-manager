@@ -1223,9 +1223,25 @@ footer {
     margin-top: 20px;
 }
 
-.marketing-left,
+.marketing-left {
+    text-align: left;
+}
+
 .marketing-right {
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 600px;
+}
+
+.contacts-section, .follow-up-section {
+    flex: 1;
+    background-color: var(--card-bg);
+    padding: 15px;
+    border-radius: 8px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
 }
 
 .marketing-left h2,

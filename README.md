@@ -37,23 +37,26 @@ A web-based football management simulation game built with Flask. Manage your gr
 - **Event Scheduling**: Schedule marketing campaigns up to 3 weeks in advance for automatic execution
 - **Contacts Management**: Browse available contacts who have responded to marketing efforts
   - View limited contact information (name, age, marketing source) for realism
-  - **Interactive Phone Call System (⚠️ Under Construction)**: Call contacts to invite them to training sessions
-    - Click "Call" button to initiate phone conversation
-    - Speech bubble interface showing realistic contact responses
-    - **Realistic Call Outcomes**:
-      - 5% chance of wrong number (disconnected message, contact removed from list)
-      - 10% chance contact declines training invitation (polite farewell, contact removed)
-      - 85% chance of successful invitation flow
-    - Two conversation options after initial greeting:
-      - "Sorry, I think I have the wrong number..." - Polite exit from call
-      - "Hi, I'm calling from [Club Name]. Interested in our Open Training Sessions?" - Invitation flow
-    - **Training Session Selection**: When contacts accept invitation, they ask "When are the training sessions?"
-      - Select from list of scheduled training sessions
-      - If no sessions scheduled: "We'll get back to you soon!" message
-      - Contact confirms attendance: "Perfect! I'll be there. See you then!"
-    - **Persistent Hang Up Button**: Hang up button always visible below conversation area
-    - **Invited contacts automatically join squad** when they attend the scheduled training session
-    - **Dynamic Contact Removal**: Contacts removed from list when number is disconnected or they decline invitation
+    - **Interactive Phone Call System (⚠️ Under Construction)**: Call contacts to invite them to training sessions
+      - Click "Call" button to initiate phone conversation
+      - Speech bubble interface showing realistic contact responses
+      - **Realistic Call Outcomes**:
+        - 5% chance of wrong number (disconnected message, contact removed from list)
+        - 10% chance contact declines training invitation (polite farewell, contact removed)
+        - 85% chance of successful invitation flow
+      - Two conversation options after initial greeting:
+        - "Sorry, I think I have the wrong number..." - Polite exit from call
+        - "Hi, I'm calling from [Club Name]. Interested in our Open Training Sessions?" - Invitation flow
+      - **Training Session Selection**: When contacts accept invitation, they ask "When are the training sessions?"
+        - Select from list of scheduled training sessions
+        - If no sessions scheduled: "We'll get back to you soon!" message
+        - Contact confirms attendance: "Perfect! I'll be there. See you then!"
+      - **Persistent Hang Up Button**: Hang up button always visible below conversation area
+    - **Follow-up player system**:
+      - Training attendees route to the new 'Follow-up' list, not instant recruitment
+      - Follow-up list integrates with the Phone Call system
+      - Call or Ignore players (with confirmation)
+      - Recruited players transfer all info (position, skill).
 
 ### Calendar System
 - **52-Week Calendar**: Full-year interactive calendar view with a 4-column grid layout and color-coded event types.

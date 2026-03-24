@@ -14,6 +14,7 @@ class Club:
         self.finances = 1000       # starting money
         self.reputation = 1        # starts as unknown
         self.squad = []            # will add later
+        self.follow_up_players = [] # Players waiting for follow up
         self.facility = None       # Current rented facility
         self.competition = None    # Current entered competition
         self.week = 1              # Current game week
@@ -221,6 +222,8 @@ def migrate_save_data(club):
         return
 
     # Ensure legacy saves have necessary attributes
+    if not hasattr(club, 'follow_up_players'):
+        club.follow_up_players = []
     if not hasattr(club, 'competition'):
         club.competition = None
     if not hasattr(club, 'week'):
@@ -493,6 +496,27 @@ def recruit_player(player_index):
         flash(f'{player.name} has been recruited to the squad!', 'success')
     return redirect(url_for('marketing_view'))
 
+@app.route('/recruit_follow_up/<int:player_index>', methods=['POST'])
+def recruit_follow_up(player_index):
+    if club is None:
+        return redirect(url_for('main_menu'))
+    
+    action = request.form.get('action')
+    
+    if 0 <= player_index < len(club.follow_up_players):
+        player = club.follow_up_players[player_index]
+        
+        if action == 'ignore':
+            club.follow_up_players.pop(player_index)
+            flash(f'{player.name} has been ignored.', 'info')
+        else:
+            # Assume recruitment if action is not ignore (or default case)
+            club.follow_up_players.pop(player_index)
+            club.squad.append(player)
+            flash(f'{player.name} has been recruited to the squad!', 'success')
+            
+    return redirect(url_for('marketing_view'))
+
 @app.route('/invite_to_training/<int:player_index>', methods=['POST'])
 def invite_to_training(player_index):
     if club is None:
@@ -742,7 +766,6 @@ def next_week():
                     event.invited_contacts = []
 
                 # Process invited contacts
-                newly_signed_players = []
                 for contact in event.invited_contacts:
                     player = Player(
                         name=contact['name'],
@@ -751,40 +774,20 @@ def next_week():
                         skill_level=contact['skill_level'],
                         source=contact.get('source', 'Open Training')
                     )
-                    club.squad.append(player)
-                    newly_signed_players.append(player)
+                    club.follow_up_players.append(player) # Add to follow up instead of squad
 
                 # Reset invited contacts after processing
                 event.invited_contacts = []
 
-                # Log all newly signed players as attendees
-                event.attendees.extend([{
-                    'name': p.name, 'age': p.age, 'position': p.position,
-                    'skill_level': p.skill_level, 'source': p.source
-                } for p in newly_signed_players])
-
                 # Add random walk-ins
                 num_walkins = random.randint(0, 5)
-                walkin_players = []
-                if num_walkins > 0:
-                    for _ in range(num_walkins):
-                        player = generate_random_player('Open Training')
-                        available_players.append(player)
-                        walkin_players.append(player)
-                
-                # Log walk-ins as attendees
-                event.attendees.extend([{
-                    'name': p.name, 'age': p.age, 'position': p.position,
-                    'skill_level': p.skill_level, 'source': p.source
-                } for p in walkin_players])
+                for _ in range(num_walkins):
+                    player = generate_random_player('Open Training')
+                    club.follow_up_players.append(player) # Add to follow up instead of available contacts
 
                 # Build results message
-                if newly_signed_players and walkin_players:
-                    week_results.append(f'⚽ Open training night: {len(newly_signed_players)} invited player(s) joined the squad, {len(walkin_players)} walk-in(s) showed interest')
-                elif newly_signed_players:
-                    week_results.append(f'⚽ Open training night: {len(newly_signed_players)} invited player(s) joined the squad')
-                elif walkin_players:
-                    week_results.append(f'⚽ Open training night: {len(walkin_players)} walk-in(s) showed interest')
+                if event.invited_contacts or num_walkins > 0:
+                    week_results.append(f'⚽ Open training night: Players are waiting in your follow-up section.')
                 else:
                     week_results.append('⚽ Open training night: No one showed up')
 
