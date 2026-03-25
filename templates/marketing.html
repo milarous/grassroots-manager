@@ -159,7 +159,7 @@
                                     </div>
                                     <div class="follow-up-actions">
                                     <button onclick="openCallModal('{{ player.name }}', {{ loop.index0 }}, '{{ club.name }}', '{{ player.source }}')" class="menu-button inline-small">Call</button>
-                                    <button onclick="confirmIgnore({{ loop.index0 }})" class="menu-button inline-small" style="background-color: #e74c3c;">Ignore</button>
+                                    <button onclick="openConfirmIgnoreModal({{ loop.index0 }})" class="menu-button inline-small danger">Ignore</button>
                                     <form id="ignoreForm-{{ loop.index0 }}" action="/recruit_follow_up/{{ loop.index0 }}" method="POST" style="display:none;">
                                         <input type="hidden" name="action" value="ignore">
                                     </form>
@@ -186,10 +186,14 @@
     <!-- Include the call modal -->
     {% include '_call_modal.html' %}
     
+    <!-- Include the confirm ignore modal -->
+    {% include '_confirm_ignore_modal.html' %}
+    
     <!-- Include the week results modal -->
     {% include '_week_results_modal.html' %}
     
     <script src="/static/burger_menu.js"></script>
+    <script src="/static/confirm_ignore_modal.js"></script>
     <script>
         const saveSlots = {{ save_slots | tojson }};
     </script>

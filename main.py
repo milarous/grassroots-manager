@@ -512,7 +512,7 @@ def recruit_follow_up(player_index):
         
         if action == 'ignore':
             club.follow_up_players.pop(player_index)
-            flash(f'{player.name} has been ignored.', 'info')
+            flash(f'{player.name} has been ignored.', 'success')
         else:
             # Assume recruitment if action is not ignore (or default case)
             club.follow_up_players.pop(player_index)

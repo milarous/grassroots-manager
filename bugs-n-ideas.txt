@@ -1,4 +1,3 @@
 Recently did the follow up section.
-The popup dialog to confirm ignore click on follow up needs proper styling
 The correct responses on the phone call for both contact and follow up calls seem to be incorrect now the source logic has been added. Need to change this back.
 The source badge changes for those who have been to a training - source should remian the same but a note about training should appear below the info.
