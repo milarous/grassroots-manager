@@ -333,19 +333,23 @@ def training_view():
                 if hasattr(event, 'attendees') and event.attendees:
                     event.attendees = [
                         {
-                            'name': p.name, 'age': p.age, 'position': p.position,
-                            'skill_level': p.skill_level, 'source': p.source
-                        } if isinstance(p, Player) else p
-                        for p in event.attendees
+                            'name': p['name'] if isinstance(p, dict) else p.name, 
+                            'age': p['age'] if isinstance(p, dict) else p.age, 
+                            'position': p['position'] if isinstance(p, dict) else p.position,
+                            'skill_level': p['skill_level'] if isinstance(p, dict) else p.skill_level, 
+                            'source': p['source'] if isinstance(p, dict) else p.source
+                        } for p in event.attendees
                     ]
                 
                 if hasattr(event, 'invited_contacts') and event.invited_contacts:
                     event.invited_contacts = [
                         {
-                            'name': p.name, 'age': p.age, 'position': p.position,
-                            'skill_level': p.skill_level, 'source': p.source
-                        } if isinstance(p, Player) else p
-                        for p in event.invited_contacts
+                            'name': p['name'] if isinstance(p, dict) else p.name, 
+                            'age': p['age'] if isinstance(p, dict) else p.age, 
+                            'position': p['position'] if isinstance(p, dict) else p.position,
+                            'skill_level': p['skill_level'] if isinstance(p, dict) else p.skill_level, 
+                            'source': p['source'] if isinstance(p, dict) else p.source
+                        } for p in event.invited_contacts
                     ]
 
                 event_time = event.year * 52 + event.week
@@ -772,9 +776,12 @@ def next_week():
                         age=contact['age'],
                         position=contact['position'],
                         skill_level=contact['skill_level'],
-                        source=f'Open Training: {event.name}'
+                        source=f'Invited to: {event.name}'
                     )
                     club.follow_up_players.append(player)
+                    
+                    # Store source in the attendee dict
+                    contact['source'] = f'Invited to: {event.name}'
                     event.attendees.append(contact)
 
                 # Add random walk-ins

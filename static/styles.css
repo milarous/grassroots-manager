@@ -1215,6 +1215,25 @@ footer {
     min-width: fit-content;
     white-space: nowrap;
 }
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.invited-badge {
+    background-color: #3d5afe;
+    color: white;
+}
+
+.walkin-badge {
+    background-color: #ff9800;
+    color: white;
+}
 /* Marketing page two-column layout */
 .marketing-layout {
     display: grid;
