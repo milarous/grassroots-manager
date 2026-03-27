@@ -605,7 +605,7 @@ def remove_contact(player_index):
         if reason == 'not_interested':
             flash(f'{removed_player.name} was not interested and has been removed from contacts.', 'info')
         else:  # disconnected or any other reason
-            flash(f"{removed_player.name}'s contact has been removed (disconnected number).", 'info')
+            flash(f"{removed_player.name}'s contact has been removed (disconnected number).", 'success')
 
         return {'success': True}
 

@@ -18,34 +18,27 @@ function openCallModal(playerName, playerIndex, clubName, playerSource) {
     const clubNameInButton = document.getElementById('clubNameInButton');
     
     // Update message based on source
-    if (currentContact.isFromTraining) {
+if (currentContact.isFromTraining) {
         contactSpeech.textContent = `Hi, I'm calling from ${clubName}. Thanks so much for coming to our Open Training Session. I don't think we're the right club for you...`;
-        
+
         // Add specific options for training followup
         responseOptions.innerHTML = `
             <button class="menu-button inline" onclick="recruitFromTraining()">Hi, I loved what I saw out there at the Open Training session, would you like to join our squad?</button>
             <button class="menu-button inline" onclick="sayGoodbye()">No worries, thanks for your time.</button>
         `;
-        
+
         isWrongNumber = false; // Disable wrong number for training follow-up
     } else {
         // 5% chance of wrong number for regular contacts
         isWrongNumber = Math.random() < 0.05;
-        
+
         if (isWrongNumber) {
             contactSpeech.textContent = `The number you have dialed has been disconnected.`;
         } else {
             contactSpeech.textContent = `Hello, ${playerName} speaking.`;
-            clubNameInButton.textContent = clubName;
         }
-
-        // Add original options for normal contacts
-        responseOptions.innerHTML = `
-            <button class="menu-button inline" onclick="inviteToTraining()">Invite to Training</button>
-            <button class="menu-button inline" onclick="sayGoodbye()">Hang up</button>
-        `;
     }
-    
+
     // Hide all option sections initially
     responseOptions.style.display = 'none';
     farewellOptions.style.display = 'none';
@@ -58,6 +51,18 @@ function openCallModal(playerName, playerIndex, clubName, playerSource) {
         setTimeout(() => {
             responseOptions.style.display = 'flex';
         }, 1500);
+    }
+
+    // Add original options for normal contacts
+    responseOptions.innerHTML = `
+        <button class="menu-button inline" onclick="wrongNumber()">Sorry, I think I have the wrong number...</button>
+        <button class="menu-button inline" onclick="inviteToTraining('${clubName}')">Hi, I'm calling from <span id="clubNameInButton"></span>. Interested in our Open Training Sessions?</button>
+    `;
+
+    // Ensure the club name element exists before setting text
+    const clubNameInButtonEl = document.getElementById('clubNameInButton');
+    if (clubNameInButtonEl) {
+        clubNameInButtonEl.textContent = clubName;
     }
 }
 
@@ -83,8 +88,24 @@ function wrongNumber() {
     setTimeout(() => {
         hangUp();
     }, 1500);
+    
+    // If wrong number was selected proactively, remove contact
+    if (currentContact) {
+        fetch(`/remove_contact/${currentContact.index}?reason=disconnected`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload to show updated contact list
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
 }
-
 function sayGoodbye() {
     const contactSpeech = document.getElementById('contactSpeech');
     const farewellOptions = document.getElementById('farewellOptions');
@@ -125,7 +146,7 @@ function sayGoodbye() {
     }
 }
 
-function inviteToTraining() {
+function inviteToTraining(clubName) {
     if (!currentContact) return;
     
     const contactSpeech = document.getElementById('contactSpeech');
