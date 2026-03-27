@@ -1,289 +1,239 @@
 # Grassroots Football Manager
 
-A web-based football management simulation game built with Flask. Manage your grassroots football club from the ground up—recruit players through various marketing methods, schedule events on a 52-week calendar, organize training sessions, and build your squad. Features a modern UI with modal dialogs, interactive save/load system, responsive navigation, and comprehensive calendar integration.
+A web-based football management simulation game built with Flask. Manage your grassroots football club from the ground up — recruit players through advertising and open training events, build your squad through a realistic follow-up process, manage your finances and facilities, and track your season on a 52-week calendar.
+
+---
 
 ## Features
 
 ### Core Gameplay
-- **Club Creation**: Create and customize your football club with name, city, and country selection
-- **Club Management**: View club overview including finances, reputation, facility, and competition
-- **Squad Management**: Recruit players to build your squad with detailed player information (name, age, position, skill level, recruitment source)
-- **Facilities**:
-   - Start with no facility and rent one of 4 options in Adelaide:
-      - Hackham Soccer Complex ($800/month)
-      - Findon Sports Park ($1,200/month)
-      - Salisbury Sports Ground ($950/month)
-      - Campbelltown Football Ground ($1,100/month)
-   - View your current facility details; search to change facilities
-   - Leave a facility at any time with the red "Leave Facility" button
-- **Competitions**:
-   - Start with no competition; choose from these associations (annual fee):
-      - Southern Districts Soccer Association ($650/year)
-      - Elizabeth & Districts Soccer Association ($600/year)
-      - Adelaide Hills Football Association ($550/year)
-      - Western Football League ($500/year)
-   - Enter a competition, view its details, change competitions, or use the red "Leave Competition" button
-- **Time Progression**: Advance the season with the top-right "Next Week" button. Week/year are shown under Club Overview and stored in save data. Weekly events are executed automatically with results displayed in a popup modal.
 
-### Player Recruitment & Marketing
-- **Marketing Page**: Centralized location for all player recruitment activities
-- **Advertising Methods** (sorted by cost):
-  - **📣 Social Media Post**: Reach potential players through social media (Cost: Free | Effect: Based on club reputation)
-  - **📋 Flyers**: Print and distribute flyers around the local area (Cost: $50 | Effect: 0-3 players)
-  - **📻 Radio Advertisement**: Run a radio ad on local stations (Cost: $250 | Effect: 2-8 players)
-  - **📺 TV Commercial**: Broadcast a commercial on local TV channels (Cost: $750 | Effect: 5-15 players)
-  - **Word of Mouth**: Passive recruitment based on club reputation (Automatic weekly execution)
-- **Player Source Tracking**: View where each player was recruited with colored source badges
-- **Event Scheduling**: Schedule marketing campaigns up to 3 weeks in advance for automatic execution
-- **Contacts Management**: Browse available contacts who have responded to marketing efforts
-  - View limited contact information (name, age, marketing source) for realism
-    - **Interactive Phone Call System (⚠️ Under Construction)**: Call contacts to invite them to training sessions
-      - Click "Call" button to initiate phone conversation
-      - Speech bubble interface showing realistic contact responses
-      - **Realistic Call Outcomes**:
-        - 5% chance of wrong number (disconnected message, contact removed from list)
-        - 10% chance contact declines training invitation (polite farewell, contact removed)
-        - 85% chance of successful invitation flow
-      - Two conversation options after initial greeting:
-        - "Sorry, I think I have the wrong number..." - Polite exit from call
-        - "Hi, I'm calling from [Club Name]. Interested in our Open Training Sessions?" - Invitation flow
-      - **Training Session Selection**: When contacts accept invitation, they ask "When are the training sessions?"
-        - Select from list of scheduled training sessions
-        - If no sessions scheduled: "We'll get back to you soon!" message
-        - Contact confirms attendance: "Perfect! I'll be there. See you then!"
-      - **Persistent Hang Up Button**: Hang up button always visible below conversation area
-    - **Follow-up player system**:
-      - Training attendees route to the new 'Follow-up' list, not instant recruitment
-      - Follow-up list integrates with the Phone Call system
-      - Call or Ignore players (with confirmation)
-      - Recruited players transfer all info (position, skill).
+* **Club Creation** — Create and name your football club with city and country selection
+* **Club Management** — View club overview including finances, reputation, facility, and competition status
+* **Squad Management** — Build your squad through a realistic player recruitment pipeline
+* **Time Progression** — Advance the season week by week using the "Next Week" button; all scheduled events execute automatically with results shown in a popup modal
+* **Save System** — 3 save slots with custom labels, timestamps, and full game state persistence
 
-### Calendar System
-- **52-Week Calendar**: Full-year interactive calendar view with a 4-column grid layout and color-coded event types.
-- **Event Types**: Match, Training, Meeting, Maintenance, Marketing
-- **Week Navigation**: Browse through all 52 weeks with year transitions
-- **Event Details**: View scheduled event information and notes
-- **Automatic Event Execution**: Scheduled events execute when "Next Week" is clicked with results popup
+---
 
-### Training Management
-- **Training Page**: Dedicated page for organizing training activities with two-column layout
-  - **Left Column**: Schedule training events (Open Training Nights)
-  - **Right Column**: View upcoming scheduled training events with invitation tracking
-- **Open Training Nights**: Schedule community training sessions to attract new players
-  - Cost: Free | Effect: 0-5 random walk-ins + invited contacts
-  - Invited contacts automatically join the squad when training occurs
-  - Random walk-ins are added to the contacts list for recruitment
-- **Week Scheduling**: Select which week to hold training up to 3 weeks in advance
-- **Event Tracking**: See all upcoming training events with week, year, and invited contact count
-- **Contact Invitations**: Invite contacts from marketing page to specific training sessions
-  - Phone call system allows selecting which training session to invite contact to
-  - Each training event displays count of invited contacts
-  - View button shows list of all invited players for a session
-- **Separated from Marketing System**: Training uses dedicated `/schedule_training` route, independent from advertising
+### Player Recruitment Pipeline
+
+Players don't just appear in your squad — they go through a realistic multi-step process:
+
+1. **Advertise** — Run marketing campaigns to attract interested players to your Contacts list
+2. **Call & Invite** — Use the phone call system to invite contacts to an Open Training Night
+3. **Train** — When the training session runs, invited contacts and random walk-ins attend
+4. **Follow-up** — Attendees appear in your Follow-up list where you can see their position and skill level
+5. **Recruit or Ignore** — Decide whether to bring each player into the squad
+
+#### Advertising Methods
+
+| Method | Cost | Effect |
+|---|---|---|
+| 📣 Social Media Post | Free | Based on club reputation |
+| 📋 Flyers | $50 | 0–3 interested players |
+| 📻 Radio Advertisement | $250 | 2–8 interested players |
+| 📺 TV Commercial | $750 | 5–15 interested players |
+| 💬 Word of Mouth | Automatic | Passive weekly attraction based on reputation |
+
+* Events can be scheduled up to 3 weeks in advance
+* Player source is tracked and displayed throughout the pipeline (e.g. "Radio Ad", "Open Training")
+
+#### Phone Call System
+
+* Call button on the Marketing page initiates a phone conversation with a contact
+* Speech bubble modal with realistic dialogue and branching choices
+* Outcome probabilities: 5% wrong number, 10% contact declines, 85% successful invitation
+* Contacts removed from list if they decline or number is disconnected
+* When a contact accepts, you select which scheduled training session to invite them to
+
+---
+
+### Training
+
+* **Training Page** — Dedicated page for scheduling and managing Open Training Nights
+* **Open Training Night** — Free community sessions that attract walk-in players and process invited contacts
+  + 0–5 random walk-ins attend, plus all invited contacts
+  + All attendees move to the Follow-up list after the session
+* **Two-column layout** — Schedule on the left, upcoming events with invited contact counts on the right
+* **View Button** — See the full list of contacts invited to any upcoming session
+* Events scheduled independently from the advertising/marketing system
+
+---
+
+### Calendar
+
+* **52-Week Calendar** — Full-year interactive calendar in a 4-column grid layout
+* **Colour-coded event types**: Match, Training, Meeting, Maintenance, Marketing
+* **Week navigation** — Browse all 52 weeks with year transitions
+* **Event details** — Click weeks to view scheduled event information
+* **Automatic execution** — Events fire when "Next Week" is clicked from any page
+
+---
+
+### Facilities
+
+* Start with no facility; choose from 4 Adelaide locations to rent:
+
+| Facility | Location | Monthly Cost |
+|---|---|---|
+| Hackham Soccer Complex | Hackham | $800 |
+| Findon Sports Park | Findon | $1,200 |
+| Salisbury Sports Ground | Salisbury | $950 |
+| Campbelltown Football Ground | Campbelltown | $1,100 |
+
+* View your current facility details at any time
+* Switch or leave a facility using the search and "Leave Facility" buttons
+
+---
+
+### Competitions
+
+* Start with no competition; enter one of 4 South Australian associations:
+
+| Association | Annual Fee |
+|---|---|
+| Southern Districts Soccer Association | $650 |
+| Elizabeth & Districts Soccer Association | $600 |
+| Adelaide Hills Football Association | $550 |
+| Western Football League | $500 |
+
+* Enter, change, or leave competitions at any time
+
+---
 
 ### Save System
-- **3 Save Slots**: Save your game progress in up to 3 different slots
-- **Custom Labels**: Add custom labels to your saves for easy identification
-- **Save Information**: View game progress (Week/Year), save timestamp, club details, facility, and scheduled events
-- **Load/Delete**: Load previous games or delete old saves
-- **Modal Interface**: User-friendly, reusable save and load modals available across pages
-- **Data Persistence**: All club data, squad, facilities, competitions, calendar events, and player sources are saved and restored on load
-- **Backward Compatibility**: Legacy saves load correctly with automatic attribute initialization
+
+* **3 Save Slots** — Save and load game progress across multiple slots
+* **Custom Labels** — Name your saves for easy identification
+* **Save Info Display** — Shows Week/Year, timestamp, club name, and facility
+* **Backward Compatibility** — Legacy saves load correctly with automatic attribute migration
+* **Modal Interface** — Save/load modals available from any game page via the burger menu
+
+---
 
 ### User Interface
-- **Modern Web Interface**: Clean, responsive HTML/CSS design with grid and flexbox layouts
-- **Brand Logo**: The Grassroots Manager logo is now displayed on the main menu page for improved branding.
-- **Dark Mode Only**: The game now uses a dark theme exclusively for better visual comfort and reduced eye strain.
-- **ARIA Accessibility**: Enhanced UI with ARIA attributes for improved accessibility, including screen reader support and keyboard navigation.
-- **UI Polish**: The "View Invited Players" modal has been redesigned for a cleaner look, and the calendar icon has been restored to the upcoming training list for better visual clarity.
-- **Navigation Menu**: Easy-to-use left-side navigation menu on all game pages
-  - Club Overview
-  - Calendar
-  - Squad
-  - Training
-  - Marketing (Player Recruitment)
-  - Facilities
-  - Competitions
-- **Top-Right Controls**: Red "Next Week" button and blue burger menu for Save Game and Return to Main Menu
-- **Interactive Modals**: Modal dialogs for saving, loading, and game results
-- **Visual Feedback**: Button states, hover effects, active page indicators, and flash messages
-- **Flash Messages**: Informational feedback for actions (recruiting, saving, event results)
-- **Footer Branding**: Consistent footer with copyright and version information
+
+* **Dark Mode** — Exclusive dark theme for visual comfort
+* **Navigation Menu** — Left-side sidebar on all game pages:
+  + Club Overview
+  + Calendar
+  + Squad
+  + Training
+  + Marketing
+  + Facilities
+  + Competitions
+* **Top-Right Controls** — "Next Week" button (red) and burger menu for Save/Return to Menu
+* **ARIA Accessibility** — Screen reader support and keyboard navigation across the UI
+* **Flash Messages** — Feedback for all player actions (recruiting, scheduling, saving)
+* **Weekly Results Modal** — Popup summarising all events that fired when advancing the week
+* **Footer** — Consistent branding with version info
+
+---
 
 ## Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/milarous/grassroots-manager.git
-   cd grassroots-manager
-   ```
+
+```
+git clone https://github.com/milarous/grassroots-manager.git
+cd grassroots-manager
+```
 
 2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+
+```
+pip install -r requirements.txt
+```
+
+---
 
 ## Usage
 
 ### Starting the Game
 
-Run the application:
 ```
 python main.py
 ```
 
-Open your web browser and navigate to `http://127.0.0.1:5000/` to start the game.
+Open your browser and go to `http://127.0.0.1:5000/`
 
 ### Playing the Game
 
-1. **Main Menu**:
-   - The main menu displays the game title and logo.
-   - Click "Create Club" to start a new game
-   - Click "Load Game" to continue from a saved slot
-   - Click "Exit Game" to close
+1. **Main Menu** — Create a new club or load a saved game
+2. **Club Creation** — Enter club name, country, and city
+3. **Marketing** — Run advertising campaigns to populate your Contacts list
+4. **Training** — Schedule Open Training Nights; invite contacts via the call system
+5. **Follow-up** — After training runs, review attendees and recruit those you want
+6. **Calendar** — Track and manage all scheduled events across the 52-week season
+7. **Facilities** — Rent a training ground to establish your club
+8. **Competitions** — Join a local association to compete
+9. **Next Week** — Advance time; all events for that week fire automatically
+10. **Save** — Use the burger menu on any page to save your progress
 
-2. **Club Creation**:
-   - Enter your club name
-   - Select your country (currently: Australia)
-   - Select your city (currently: Adelaide)
-   - Click "Confirm" to create your club
-
-3. **Game Navigation**:
-   - Use the left sidebar menu to navigate between sections:
-     - **Club Overview**: View finances, reputation, facility, competition, and club details
-     - **Calendar**: 52-week calendar view with scheduled events
-     - **Squad**: View your current squad members
-     - **Training**: Schedule and manage training sessions
-     - **Marketing**: Recruit players through advertising methods and manage contacts
-     - **Facilities**: Rent and manage your club facilities
-     - **Competitions**: Enter, view, change, or leave competitions
-   - Use the top-right burger menu for Save Game and Return to Main Menu
-
-4. **Player Recruitment (Marketing)**:
-   - Access the Marketing page from the left navigation menu
-   - Choose from multiple advertising methods:
-     - **Social Media Post** (Free, reputation-dependent)
-     - **Put Up Flyers** ($50, attracts 0-3 players)
-     - **Radio Advertisement** ($250, attracts 2-8 players)
-     - **TV Commercial** ($750, attracts 5-15 players)
-   - Schedule advertising campaigns 0-3 weeks in advance for automatic execution
-   - Browse available players in your contacts list
-   - **Call contacts to invite them to training**:
-     - Click "Call" button next to a contact
-     - Choose response option (wrong number or training invitation)
-     - If inviting: Select from scheduled training sessions
-     - Contact will attend and join squad when training occurs
-
-5. **Training Management**:
-   - Access the Training page from the left navigation menu
-   - Schedule "Open Training Night" events to attract new players
-   - Select the week (current or up to 3 weeks in advance)
-   - Click "Schedule Training" to add the event to your calendar
-   - View upcoming training events with invited contact counts
-   - When training occurs: invited contacts join squad, random walk-ins added to contacts
-
-6. **Calendar Management**:
-   - Access the Calendar page from the left navigation menu
-   - View all 52 weeks of the year with color-coded events in a 4-column grid.
-   - Click on weeks to see event details
-   - Events are automatically executed when you click "Next Week" from any page
-   - Calendar events are persistent and save with your game
-
-7. **Facilities Management**:
-   - If you don't have a facility yet, browse and select one of the 4 available facilities in Adelaide to rent
-   - Once you have a facility, the page shows your current facility details (name, location, monthly cost)
-   - Use "Search for New Facility" to view options and switch
-   - Use "Leave Facility" (red) to revert back to no facility
-
-8. **Competitions Management**:
-   - If you have no current competition, the page shows "No Current Competition" and lists the available associations
-   - Click "Enter Competition" to join one; current competition details will display
-   - Click "Change Competition" to show all options (current one is marked)
-   - Click "Leave Competition" (red) to revert back to no competition
-
-9. **Time Progression**:
-   - Click "Next Week" in the top right to advance the season
-   - All scheduled events for that week execute automatically
-   - A popup modal displays the results of all executed events
-   - Week and Year are shown under the Club Overview heading
-   - After week 52, the year advances and the week resets to 1
-
-10. **Saving Your Game**:
-    - Click the "Save Game" button on any game page (via burger menu)
-    - Select one of the 3 available save slots
-    - Enter a custom label for your save (e.g., "My First Club")
-    - Click "Confirm" to save
-    - Existing saves show label, game progress (Week/Year), save time, and club information
-
-11. **Loading a Game**:
-    - From the main menu, click "Load Game"
-    - Select a save slot to view its details
-    - Click "Load" to continue from that save
-    - All previous data including squad, calendar events, and marketing progress are restored
-
-## Requirements
-
-- Python 3.x
-- Flask
-- See `requirements.txt` for full list of dependencies.
+---
 
 ## Project Structure
 
 ```
 grassroots-manager/
-├── main.py                 # Main Flask application and game logic
-│                           # - Club, Player, CalendarEvent, Facility, Competition classes
-│                           # - Flask routes for all game pages and API endpoints
-│                           # - Save/load functionality with pickle
-│                           # - Event scheduling and execution system
+├── main.py                     # Flask app, game logic, all routes and classes
+├── requirements.txt            # Python dependencies
+├── venv-setup.md               # Virtual environment setup notes
+├── CHANGELOG.md                # Version history
 │
-├── templates/              # HTML templates for the web interface
-│   ├── index.html          # Main menu with club creation and load modals
-│   ├── club.html           # Club overview page
-│   ├── squad.html          # Squad management and player list
-│   ├── marketing.html      # Player recruitment with two-column layout
-│   ├── training.html       # Training event management
-│   ├── calendar.html       # 52-week calendar view with events
-│   ├── facilities.html     # Facilities management and rental
-│   ├── competitions.html   # Competition selection and management
-│   ├── exit.html           # Exit page
-│   ├── _game_menu.html     # Reusable navigation menu component
-│   ├── _save_modal.html    # Reusable save modal component
-│   ├── _load_modal.html    # Reusable load modal component
-│   ├── _call_modal.html    # Phone call modal with speech bubbles and training selection
+├── templates/
+│   ├── index.html              # Main menu
+│   ├── club.html               # Club overview
+│   ├── squad.html              # Squad list
+│   ├── marketing.html          # Player recruitment (contacts + follow-up)
+│   ├── training.html           # Training scheduling and upcoming events
+│   ├── calendar.html           # 52-week calendar
+│   ├── facilities.html         # Facility management
+│   ├── competitions.html       # Competition management
+│   ├── exit.html               # Exit screen
+│   ├── _game_menu.html         # Reusable navigation sidebar
+│   ├── _save_modal.html        # Reusable save modal
+│   ├── _load_modal.html        # Reusable load modal
+│   ├── _call_modal.html        # Phone call modal with training invitation
 │   └── _week_results_modal.html # Weekly event results popup
 │
-├── static/                 # Static assets (CSS, JavaScript, and images)
-│   ├── styles.css          # Main stylesheet with CSS custom properties for theming
-│   ├── theme_toggle.js     # Light/dark mode toggle functionality
-│   ├── burger_menu.js      # Burger menu toggle for Save/Return dropdown
-│   ├── save_modal.js       # Save modal functionality
-│   ├── load_modal.js       # Load modal functionality
-│   ├── call_modal.js       # Phone call modal with training invitation system
+├── static/
+│   ├── styles.css              # Main stylesheet with CSS custom properties
+│   ├── burger_menu.js          # Burger menu toggle
+│   ├── save_modal.js           # Save modal logic
+│   ├── load_modal.js           # Load modal logic
+│   ├── call_modal.js           # Phone call flow and training invitation
+│   ├── theme_toggle.js         # (Legacy — dark mode is now exclusive)
 │   └── Images/
-│       └── gm_logo.png     # Application logo
+│       └── gm_logo.png         # Game logo
 │
-├── saves/                  # Save game files (created automatically)
-│   └── slot_*.pkl          # Pickled save data files containing:
-│                           # - Club object with all attributes
-│                           # - Squad list with player sources
-│                           # - Available players list
-│                           # - Calendar events
-│                           # - Timestamp and custom labels
-│
-└── requirements.txt        # Python dependencies
+└── saves/
+    └── slot_*.pkl              # Pickled save files (auto-created)
 ```
 
-### Key Components
+### Key Classes (`main.py`)
 
-- **Flask Application**: Built with Flask web framework for routing and template rendering
-- **Game Classes**:
-  - `Club`: Manages club state (finances, reputation, week/year, squad, facilities, competitions)
-  - `Player`: Represents players with attributes and recruitment source tracking
-  - `CalendarEvent`: Manages scheduled events with type, timing, and invited contacts list
-  - `Facility`: Represents rentable training facilities
-  - `Competition`: Represents league associations
-- **Persistence**: Save system using Python's pickle module for object serialization
-- **Event System**: Automatic event scheduling and execution with weekly progression
-- **Frontend**: HTML5, CSS3 with Grid/Flexbox, and vanilla JavaScript for interactive UI
-- **Modal System**: Reusable modal components for save/load and event results
+| Class | Purpose |
+|---|---|
+| `Club` | Club state — finances, reputation, week/year, squad, facility, competition, calendar |
+| `Player` | Player attributes — name, age, position, skill level, source |
+| `CalendarEvent` | Scheduled events — type, week/year, notes, invited contacts, attendees |
+| `Facility` | Rentable training ground with monthly cost |
+| `Competition` | League association with annual fee |
+
+---
+
+## Requirements
+
+* Python 3.x
+* Flask
+* See `requirements.txt` for full dependency list
+
+---
+
+## About
+
+**Grassroots Manager** is a grassroots-to-pro football club management sim. Starting with nothing — no players, no facility, no competition — your goal is to build a club from the ground up.
+
+The game is in active pre-release development. Version 1.0.0 will mark the first full season loop with match simulation, league tables, and season progression.
