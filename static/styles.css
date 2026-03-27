@@ -1216,6 +1216,12 @@ footer {
     white-space: nowrap;
 }
 
+/* Player entry padding */
+.contact-item,
+.follow-up-item {
+    padding: 20px;
+}
+
 .badge {
     display: inline-block;
     padding: 2px 8px;
@@ -1257,7 +1263,7 @@ footer {
 .contacts-section, .follow-up-section {
     flex: 1;
     background-color: var(--card-bg);
-    padding: 0;
+    padding: 20px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
     display: flex;

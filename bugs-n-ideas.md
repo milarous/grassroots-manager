@@ -4,7 +4,6 @@ Recently did the follow up section.
 ## Bug fixes needed
 The correct responses on the phone call for follow up calls are all messed up.
 The source badge changes for those who have been to a training - source should remian the same but a note about training should appear below the info.
-Add some padding to the side of the Contacts and Follow-up lists when they are empty
 Upcoming training should not display position and skill level
 
 ## Where to go next
