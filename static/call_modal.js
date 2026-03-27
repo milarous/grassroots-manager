@@ -17,27 +17,29 @@ function openCallModal(playerName, playerIndex, clubName, playerSource) {
     const trainingSelection = document.getElementById('trainingSelection');
     const clubNameInButton = document.getElementById('clubNameInButton');
     
-    // Update message based on source
+    // Update message for all players (consistent with regular contacts)
+// 5% chance of wrong number for all players
+isWrongNumber = Math.random() < 0.05;
+
+if (isWrongNumber) {
+    contactSpeech.textContent = `The number you have dialed has been disconnected.`;
+} else {
+    contactSpeech.textContent = `Hello, ${playerName} speaking.`;
+}
+
+// Add specific options for training followup
 if (currentContact.isFromTraining) {
-        contactSpeech.textContent = `Hi, I'm calling from ${clubName}. Thanks so much for coming to our Open Training Session. I don't think we're the right club for you...`;
-
-        // Add specific options for training followup
-        responseOptions.innerHTML = `
-            <button class="menu-button inline" onclick="recruitFromTraining()">Hi, I loved what I saw out there at the Open Training session, would you like to join our squad?</button>
-            <button class="menu-button inline" onclick="sayGoodbye()">No worries, thanks for your time.</button>
-        `;
-
-        isWrongNumber = false; // Disable wrong number for training follow-up
-    } else {
-        // 5% chance of wrong number for regular contacts
-        isWrongNumber = Math.random() < 0.05;
-
-        if (isWrongNumber) {
-            contactSpeech.textContent = `The number you have dialed has been disconnected.`;
-        } else {
-            contactSpeech.textContent = `Hello, ${playerName} speaking.`;
-        }
-    }
+    responseOptions.innerHTML = `
+        <button class="menu-button inline" onclick="recruitFromTraining()">Hi, I loved what I saw out there at the Open Training session, would you like to join our squad?</button>
+        <button class="menu-button inline" onclick="notRightClub()">I don't think we're the right club for you...</button>
+    `;
+} else {
+    // Add original options for normal contacts
+    responseOptions.innerHTML = `
+        <button class="menu-button inline" onclick="wrongNumber()">Sorry, I think I have the wrong number...</button>
+        <button class="menu-button inline" onclick="inviteToTraining('${clubName}')">Hi, I'm calling from <span id="clubNameInButton"></span>. Interested in our Open Training Sessions?</button>
+    `;
+}
 
     // Hide all option sections initially
     responseOptions.style.display = 'none';
@@ -52,12 +54,6 @@ if (currentContact.isFromTraining) {
             responseOptions.style.display = 'flex';
         }, 1500);
     }
-
-    // Add original options for normal contacts
-    responseOptions.innerHTML = `
-        <button class="menu-button inline" onclick="wrongNumber()">Sorry, I think I have the wrong number...</button>
-        <button class="menu-button inline" onclick="inviteToTraining('${clubName}')">Hi, I'm calling from <span id="clubNameInButton"></span>. Interested in our Open Training Sessions?</button>
-    `;
 
     // Ensure the club name element exists before setting text
     const clubNameInButtonEl = document.getElementById('clubNameInButton');
@@ -106,6 +102,41 @@ function wrongNumber() {
         });
     }
 }
+function notRightClub() {
+    const contactSpeech = document.getElementById('contactSpeech');
+    const farewellOptions = document.getElementById('farewellOptions');
+    
+    // 50% chance for each response
+    const responses = ['Wait, what?', 'Ok, no worries'];
+    const randomResponse = responses[Math.floor(Math.random() * 2)];
+    
+    contactSpeech.textContent = randomResponse;
+    farewellOptions.style.display = 'none';
+    
+    // Remove player from follow-up list
+    if (currentContact) {
+        fetch(`/remove_contact/${currentContact.index}?reason=void`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            setTimeout(() => {
+                hangUp();
+                if (data.success) {
+                    // Reload to show updated contact list
+                    window.location.reload();
+                }
+            }, 2000);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            setTimeout(() => {
+                hangUp();
+            }, 2000);
+        });
+    }
+}
+
 function sayGoodbye() {
     const contactSpeech = document.getElementById('contactSpeech');
     const farewellOptions = document.getElementById('farewellOptions');
