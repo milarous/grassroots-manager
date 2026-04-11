@@ -1,9 +1,10 @@
 ## Latest feature added
-Recently did the follow up section.
+Add ability to decline to join the squad (20% chance)
+Add decline options in training invite - 10% decline, either not interested or time inconvenient
 
 ## Bug fixes needed
-The source badge changes for those who have been to a training - source should remain the same but a note about training should appear below the info.
 Upcoming training should not display position and skill level
+
 
 ## Where to go next
 

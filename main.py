@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 
 import os
 import pickle
+import random
 
 # -----------------------------
 # Core Data Classes
@@ -41,6 +42,7 @@ class Player:
         self.skill_level = skill_level  # 1-10 scale
         self.player_type = "Senior"  # For now, only Senior players
         self.source = source  # Where the player came from (flyers, social_media, open_training, word_of_mouth)
+        self.last_invited_week = None  # Track when last invited to training
 
     def __str__(self):
         source_text = f" ({self.source})" if self.source else ""
@@ -515,9 +517,13 @@ def recruit_follow_up(player_index):
             flash(f'{player.name} has been ignored.', 'success')
         else:
             # Assume recruitment if action is not ignore (or default case)
-            club.follow_up_players.pop(player_index)
-            club.squad.append(player)
-            flash(f'{player.name} has been recruited to the squad!', 'success')
+            if random.random() < 0.2:  # 20% chance of decline
+                club.follow_up_players.pop(player_index)
+                flash(f'Offer declined by {player.name}. Player removed from follow-up list.', 'error')
+            else:
+                club.follow_up_players.pop(player_index)
+                club.squad.append(player)
+                flash(f'{player.name} has been recruited to the squad!', 'success')
             
     return redirect(url_for('marketing_view'))
 
@@ -571,6 +577,24 @@ def add_contact_to_training(player_index, training_index):
         if 0 <= training_index < len(upcoming_training):
             player = available_players.pop(player_index)
 
+            # Check if player was already invited this week
+            if player.last_invited_week == club.week:
+                flash(f'{player.name} was already invited to training this week. Try again next week.', 'error')
+                available_players.insert(player_index, player)  # Put player back in the list
+                return {'success': False, 'error': 'Player already invited this week'}
+
+            # Check for 10% chance of training invite decline
+            if random.random() < 0.1:  # 10% chance of decline
+                if random.random() < 0.5:  # 50% chance of no interest
+                    flash(f'{player.name} is no longer interested in training. Removed from contacts.', 'error')
+                    # Player is removed from available_players by pop() above
+                    return {'success': False, 'error': 'Player no longer interested'}
+                else:  # 50% chance of timing issue
+                    flash(f'{player.name} found the training time inconvenient. Will try again next week.', 'error')
+                    player.last_invited_week = club.week  # Mark as invited this week
+                    available_players.insert(player_index, player)  # Put player back in the list
+                    return {'success': False, 'error': 'Training time inconvenient'}
+
             # Ensure the event has invited_contacts list (for legacy saves)
             if not hasattr(upcoming_training[training_index], 'invited_contacts'):
                 upcoming_training[training_index].invited_contacts = []
@@ -603,9 +627,12 @@ def remove_contact(player_index):
         removed_player = available_players.pop(player_index)
 
         if reason == 'not_interested':
-            flash(f'{removed_player.name} was not interested and has been removed from contacts.', 'success')
+            flash(f'{removed_player.name} was not interested and has been removed from contacts.', 'error')
         else:  # disconnected or any other reason including 'void'
-            flash(f"{removed_player.name} was removed from the Follow-up list.", 'success')
+            if random.random() < 0.05:  # 5% chance of wrong number
+                flash(f"📞 Wrong number! {removed_player.name} was removed from the Contact list.", 'error')
+            else:
+                flash(f"{removed_player.name} was removed from the Contact list.", 'success')
 
         return {'success': True}
 
@@ -814,6 +841,10 @@ def next_week():
             for _ in range(num_players):
                 available_players.append(generate_random_player('Word of Mouth'))
             week_results.append(f'💬 Word of mouth: {num_players} player(s) attracted')
+
+    # Reset last_invited_week for all available players at the start of a new week
+    for player in available_players:
+        player.last_invited_week = None
 
     club.week += 1
     if club.week > 52:
