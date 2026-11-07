@@ -20,3 +20,6 @@ build/
 
 # Log files
 *.log
+
+# Project Files and Dev Notes
+project-notes/
