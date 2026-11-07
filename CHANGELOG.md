@@ -7,7 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-*Nothing yet — see [0.4.0] for the latest changes.*
+### Added
+
+* **Standalone Windows executable**
+  + Single-file PyInstaller build (`GrassrootsManager.exe`) containing only the Python runtime and game logic
+  + `templates/`, `static/`, and `saves/` ship as loose folders beside the executable
+  + HTML, CSS, and JavaScript can be edited without rebuilding the executable
+  + Save files are pinned to the executable's folder
+* **Automatic browser launch**
+  + The default browser opens `http://127.0.0.1:5000` 1.5 seconds after launch
+* **Frozen-aware path resolution**
+  + `base_dir` resolves to the executable's directory when frozen and to the script directory when running from source
+
+### Changed
+
+* Flask template and static folders are now resolved relative to `base_dir` instead of the current working directory
+* The `saves/` directory is created automatically (with `exist_ok=True`) if it does not exist
+* All save, load, and delete operations use absolute paths under `base_dir/saves`
+* `app.run()` now binds explicitly to `127.0.0.1:5000` with `debug=False`
+* README updated with executable installation, distribution layout, and build instructions
 
 ---
 

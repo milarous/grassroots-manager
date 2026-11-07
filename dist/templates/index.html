@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grassroots Football Manager</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Theme toggle removed for consistent dark theme -->
+</head>
+<body class="dark-theme">
+    <h1>Grassroots Football Manager</h1>
+    <p class="subtitle">A grassroots-to-pro football club management sim</p>
+    <img src="/static/images/gm_logo.png" alt="Grassroots Manager Logo" style="width: 150px; margin-bottom: 20px;">
+    <div class="menu-buttons">
+        <button onclick="openClubForm()">Create Club</button>
+        <button onclick="openLoadModal()">Load Game</button>
+        <a href="/exit">Exit Game</a>
+    </div>
+    
+    <!-- Include the reusable load modal -->
+    {% include '_load_modal.html' %}
+    
+    <!-- New Club Information Modal -->
+    <div id="clubFormModal" class="modal">
+        <div class="modal-content">
+            <h2>New Club Information</h2>
+            <form id="clubForm" method="POST" action="/create_club">
+                <div class="form-group">
+                    <label for="club_name">Club Name:</label>
+                    <input type="text" id="club_name" name="club_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="country">Country:</label>
+                    <select id="country" name="country" required>
+                        <option value="">-- Select Country --</option>
+                        <option value="Australia">Australia</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="city">City:</label>
+                    <select id="city" name="city" required>
+                        <option value="">-- Select City --</option>
+                        <option value="Adelaide">Adelaide</option>
+                    </select>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="submit">Confirm</button>
+                    <button type="button" class="cancel" onclick="closeClubForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const saveSlots = {{ save_slots | tojson }};
+        
+        function openClubForm() {
+            document.getElementById('clubFormModal').classList.add('show');
+        }
+        
+        function closeClubForm() {
+            document.getElementById('clubFormModal').classList.remove('show');
+            document.getElementById('clubForm').reset();
+        }
+    </script>
+    <script src="/static/load_modal.js"></script>
+    
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
+</body>
+</html>

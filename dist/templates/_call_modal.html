@@ -1,0 +1,31 @@
+<!-- Call Modal - Include this in marketing page -->
+<!-- Requires: static/call_modal.js to be included in the page -->
+
+<div id="callModal" class="modal">
+    <div class="modal-content call-modal-content">
+        <h3>📞 Phone Call</h3>
+        
+        <div class="call-interface">
+            <div class="speech-bubble">
+                <p id="contactSpeech"></p>
+            </div>
+        </div>
+        
+        <div id="responseOptions" class="modal-buttons" style="display: none;">
+            <button onclick="wrongNumber()" class="menu-button">Sorry, I think I have the wrong number...</button>
+            <button onclick="inviteToTraining()" class="menu-button">Hi, I'm calling from <span id="clubNameInButton"></span>. Interested in our Open Training Sessions?</button>
+        </div>
+        
+        <div id="farewellOptions" class="modal-buttons" style="display: none;">
+            <button onclick="sayGoodbye()" class="menu-button">No problem, have a great day!</button>
+        </div>
+        
+        <div id="trainingSelection" class="modal-buttons" style="display: none;">
+            <div id="trainingSessionsList"></div>
+        </div>
+        
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button onclick="hangUp()" class="btn-hangup">Hang Up</button>
+        </div>
+    </div>
+</div>

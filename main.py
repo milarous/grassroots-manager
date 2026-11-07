@@ -3,6 +3,19 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import os
 import pickle
 import random
+import sys
+import threading
+import webbrowser
+
+# -----------------------------
+# Paths / frozen support
+# -----------------------------
+if getattr(sys, 'frozen', False):
+    # PyInstaller: sit next to the executable
+    base_dir = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    # Normal run: sit next to main.py
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # -----------------------------
 # Core Data Classes
@@ -95,7 +108,11 @@ EVENT_COLORS = {
 # -----------------------------
 # Flask Web Application
 # -----------------------------
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(base_dir, 'templates'),
+    static_folder=os.path.join(base_dir, 'static'),
+)
 app.secret_key = 'grassroots-manager-secret-key'
 
 # Initialize a default club
@@ -121,8 +138,8 @@ competitions = [
 ]
 
 # Create saves directory if it doesn't exist
-if not os.path.exists('saves'):
-    os.makedirs('saves')
+SAVES_DIR = os.path.join(base_dir, 'saves')
+os.makedirs(SAVES_DIR, exist_ok=True)
 
 def save_game(slot, label=""):
     """Save the current game state to a slot"""
@@ -134,14 +151,15 @@ def save_game(slot, label=""):
         'label': label,
         'timestamp': datetime.now().isoformat()
     }
-    with open(f'saves/slot_{slot}.pkl', 'wb') as f:
+    os.makedirs(SAVES_DIR, exist_ok=True)
+    with open(os.path.join(base_dir, 'saves', f'slot_{slot}.pkl'), 'wb') as f:
         pickle.dump(save_data, f)
 
 def load_game(slot):
     """Load game state from a slot"""
     global club, available_players
     try:
-        with open(f'saves/slot_{slot}.pkl', 'rb') as f:
+        with open(os.path.join(base_dir, 'saves', f'slot_{slot}.pkl'), 'rb') as f:
             save_data = pickle.load(f)
             club = save_data['club']
             available_players = save_data['available_players']
@@ -155,7 +173,7 @@ def get_save_slots():
     from datetime import datetime
     slots = {}
     for i in range(1, 4):
-        file_path = f'saves/slot_{i}.pkl'
+        file_path = os.path.join(base_dir, 'saves', f'slot_{i}.pkl')
         if os.path.exists(file_path):
             try:
                 with open(file_path, 'rb') as f:
@@ -875,7 +893,7 @@ def load_game_route(slot):
 @app.route('/delete_game/<int:slot>')
 def delete_game_route(slot):
     if 1 <= slot <= 3:
-        file_path = f'saves/slot_{slot}.pkl'
+        file_path = os.path.join(base_dir, 'saves', f'slot_{slot}.pkl')
         if os.path.exists(file_path):
             os.remove(file_path)
     return redirect(request.referrer or url_for('main_menu'))
@@ -888,5 +906,11 @@ def exit_game():
 # -----------------------------
 # Run Application
 # -----------------------------
+def open_browser():
+    webbrowser.open('http://127.0.0.1:5000')
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    timer = threading.Timer(1.5, open_browser)
+    timer.daemon = True  # never holds the process open
+    timer.start()
+    app.run(host='127.0.0.1', port=5000, debug=False)

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Facilities</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/theme_toggle.js"></script>
+</head>
+<body>
+    <a href="/next_week" class="next-week-btn">Next Week</a>
+
+    <div class="burger-menu">
+        <button id="burgerBtn" class="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="burgerDropdown" class="burger-dropdown">
+            <button onclick="openSaveModal()">Save Game</button>
+            <a href="/">Return to Main Menu</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>Club Facilities</h1>
+        {% if club %}
+        <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="container">
+        {% include '_game_menu.html' %}
+        
+        <div class="right-content">
+            {% if club.facility %}
+                <h2>Current Facility</h2>
+                <div class="facility-details">
+                    <p><strong>Facility Name:</strong> {{ club.facility.name }}</p>
+                    <p><strong>Location:</strong> {{ club.facility.city }}</p>
+                    <p><strong>Monthly Hire Cost:</strong> ${{ club.facility.monthly_cost }}</p>
+                </div>
+                <div class="action-row">
+                    <button onclick="toggleFacilitySearch()" class="menu-button">Search for New Facility</button>
+                    <a href="/leave_facility" class="menu-button danger">Leave Facility</a>
+                </div>
+                <div id="facilitySearch" style="display: none; margin-top: 20px;">
+                    <h3>Available Facilities in Adelaide</h3>
+                    <div class="facilities-grid">
+                        {% for facility in facilities %}
+                            {% if club.facility and facility.name == club.facility.name %}
+                                <div class="facility-card current">
+                                    <h4>{{ facility.name }}</h4>
+                                    <p><strong>Location:</strong> {{ facility.city }}</p>
+                                    <p><strong>Monthly Cost:</strong> ${{ facility.monthly_cost }}</p>
+                                    <div class="current-facility-badge">✓ Current Facility</div>
+                                </div>
+                            {% else %}
+                                <div class="facility-card">
+                                    <h4>{{ facility.name }}</h4>
+                                    <p><strong>Location:</strong> {{ facility.city }}</p>
+                                    <p><strong>Monthly Cost:</strong> ${{ facility.monthly_cost }}</p>
+                                    <a href="/rent_facility/{{ loop.index0 }}" class="rent-btn">Rent This Facility</a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <h2>Search for Facilities</h2>
+                <p>Your club doesn't have a facility yet. Choose one to rent in Adelaide:</p>
+                <div class="facilities-grid">
+                    {% for facility in facilities %}
+                        <div class="facility-card">
+                            <h4>{{ facility.name }}</h4>
+                            <p><strong>Location:</strong> {{ facility.city }}</p>
+                            <p><strong>Monthly Cost:</strong> ${{ facility.monthly_cost }}</p>
+                            <a href="/rent_facility/{{ loop.index0 }}" class="rent-btn">Rent This Facility</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
+    
+    <!-- Include the reusable save modal -->
+    {% include '_save_modal.html' %}
+    
+    <!-- Include the week results modal -->
+    {% include '_week_results_modal.html' %}
+    
+    <script src="/static/burger_menu.js"></script>
+    <script>
+        const saveSlots = {{ save_slots | tojson }};
+        
+        function toggleFacilitySearch() {
+            const searchDiv = document.getElementById('facilitySearch');
+            if (searchDiv) {
+                searchDiv.style.display = searchDiv.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+    </script>
+    <script src="/static/save_modal.js"></script>
+    <script src="/static/modal_handler.js"></script>
+</body>
+</html>

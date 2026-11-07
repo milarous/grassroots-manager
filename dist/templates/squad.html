@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squad List</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/theme_toggle.js"></script>
+</head>
+<body>
+    <a href="/next_week" class="next-week-btn">Next Week</a>
+
+    <div class="burger-menu">
+        <button id="burgerBtn" class="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="burgerDropdown" class="burger-dropdown">
+            <button onclick="openSaveModal()">Save Game</button>
+            <a href="/">Return to Main Menu</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>Squad List</h1>
+        {% if club %}
+        <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="container">
+        {% include '_game_menu.html' %}
+        
+        <div class="right-content">
+            <h2>Current Squad</h2>
+            {% if club.squad %}
+                <ul>
+                {% for player in club.squad %}
+                    <li>
+                        {{ player.name }} ({{ player.age }}, {{ player.position }}, Skill: {{ player.skill_level }})
+                        {% if player.source %}<span class="player-source">{{ player.source }}</span>{% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No players in squad yet!</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
+    
+    <!-- Include the reusable save modal -->
+    {% include '_save_modal.html' %}
+    
+    <!-- Include the week results modal -->
+    {% include '_week_results_modal.html' %}
+    
+    <script src="/static/burger_menu.js"></script>
+    <script>
+        const saveSlots = {{ save_slots | tojson }};
+    </script>
+    <script src="/static/save_modal.js"></script>
+    <script src="/static/modal_handler.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Hub</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Theme toggle removed for consistent dark theme -->
+</head>
+<body class="dark-theme">
+    <a href="/next_week" class="next-week-btn">Next Week</a>
+
+    <div class="burger-menu">
+        <button id="burgerBtn" class="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="burgerDropdown" class="burger-dropdown">
+            <button onclick="openSaveModal()">Save Game</button>
+            <a href="/">Return to Main Menu</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>Training Hub</h1>
+        {% if club %}
+            <div class="game-date">Week {{ club.week }}, {{ club.year }}</div>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        {% include '_game_menu.html' %}
+
+        <div class="right-content">
+            <p class="subtitle">Schedule training events and track player attendance.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="training-layout">
+                <!-- Left side: Schedule Training -->
+                <div class="training-left">
+                    <h2>Schedule a Training Event</h2>
+                    <div class="ad-option">
+                        <div class="ad-option-left">
+                            <h3>⚽ Open Training Night</h3>
+                            <p class="ad-description">Host a training session open to anyone. A great way to discover new talent and may attract walk-in players.</p>
+                            <p class="ad-details"><strong>Cost:</strong> Free | <strong>Effect:</strong> 0-5 players</p>
+                            <p class="ad-note">All players who attend will be added to you follow-up list upon training completion.</p>
+                        </div>
+                        <div class="ad-option-right">
+                            <form action="/schedule_training/open_training" method="POST">
+                                <select name="week_offset" class="week-selector">
+                                    <option value="0">This Week</option>
+                                    <option value="1">Next Week</option>
+                                    <a href="/templates/training.html"></a>
+                                    <option value="2">In 2 Weeks</option>
+                                    <option value="3">In 3 Weeks</option>
+                                </select>
+                                <button type="submit" class="menu-button">Schedule</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right side: View Training Events -->
+                <div class="training-right">
+                    <!-- Upcoming Training Events -->
+                    <div class="training-events-section">
+                        <h2>Upcoming Training</h2>
+                        <div class="card">
+                            <div class="card-content">
+                                {% if upcoming_training_events %}
+                                    <ul>
+                                    {% for event in upcoming_training_events %}
+                                        <li class="contact-item">
+                                            <div class="contact-info">
+                                                <span>
+                                                    <strong>{{ event.name }}</strong> (Week {{ event.week }}, {{ event.year }})
+                                                </span>
+                                                <span class="contact-details">
+                                                    📅 {{ event.invited_contacts|length }} player(s) invited
+                                                </span>
+                                            </div>
+                                            <button class="menu-button inline-small" data-invited='{{ event.invited_contacts|tojson|safe }}' data-name="{{ event.name }}" data-week="{{ event.week }}" data-year="{{ event.year }}" onclick="handleViewInvited(this)">View</button>
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>No upcoming training events scheduled.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Training Events -->
+                    <div class="training-events-section">
+                        <h2>Recent Training (Last 4 Weeks)</h2>
+                        <div class="card">
+                            <div class="card-content">
+                                {% if recent_training_events %}
+                                    <ul>
+                                    {% for event in recent_training_events %}
+                                        <li class="contact-item">
+                                            <div class="contact-info">
+                                                <span>
+                                                    <strong>{{ event.name }}</strong> (Week {{ event.week }}, {{ event.year }})
+                                                </span>
+                                                <span class="contact-details">
+                                                    📅 {{ event.attendees|length }} player(s) attended
+                                                </span>
+                                            </div>
+                                            {% if event.attendees %}
+                                                <button class="menu-button inline-small" data-attendees='{{ event.attendees|tojson|safe }}' data-name="{{ event.name }}" data-week="{{ event.week }}" data-year="{{ event.year }}" onclick="handleViewAttendance(this)">View</button>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>No recent training events.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© Coffee Addickt Games, 2026<br>Early Development Edition</p>
+    </footer>
+
+    <!-- Modals -->
+    {% include '_save_modal.html' %}
+    {% include '_view_attendance_modal.html' %}
+    {% include '_view_invited_modal.html' %}
+    {% include '_week_results_modal.html' %}
+
+    <script src="/static/burger_menu.js"></script>
+    <script>
+        const saveSlots = {{ save_slots | tojson }};
+    </script>
+    <script src="/static/save_modal.js"></script>
+    <script src="/static/modal_handler.js"></script>
+</body>
+</html>

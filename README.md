@@ -2,6 +2,8 @@
 
 A web-based football management simulation game built with Flask. Manage your grassroots football club from the ground up — recruit players through advertising and open training events, build your squad through a realistic follow-up process, manage your finances and facilities, and track your season on a 52-week calendar.
 
+A pre-built Windows executable is available in `dist/` — no Python installation required. The `templates/`, `static/`, and `saves/` folders stay alongside the executable so assets can be customised and save data kept locally.
+
 ---
 
 ## Features
@@ -109,6 +111,7 @@ Players don't just appear in your squad — they go through a realistic multi-st
 * **Save Info Display** — Shows Week/Year, timestamp, club name, and facility
 * **Backward Compatibility** — Legacy saves load correctly with automatic attribute migration
 * **Modal Interface** — Save/load modals available from any game page via the burger menu
+* **Save Location** — Save files live in `saves/` next to the executable (or next to `main.py` when running from source)
 
 ---
 
@@ -133,6 +136,23 @@ Players don't just appear in your squad — they go through a realistic multi-st
 
 ## Installation
 
+### Option A — Pre-built executable (Windows, recommended for players)
+
+No Python installation is required.
+
+1. Copy the whole `dist` folder (or unzip the distributed archive).
+2. Keep these together in the same folder:
+   + `GrassrootsManager.exe`
+   + `templates/`
+   + `static/`
+3. Double-click `GrassrootsManager.exe`.
+
+The game starts a local server and automatically opens `http://127.0.0.1:5000` in your default browser after about 1.5 seconds. A console window stays open while the game runs — close it to stop the server.
+
+> **Note:** The executable is unsigned, so Windows SmartScreen may show "Windows protected your PC" on first launch. Click **More info → Run anyway**.
+
+### Option B — Run from source
+
 1. Clone the repository:
 
 ```
@@ -146,17 +166,33 @@ cd grassroots-manager
 pip install -r requirements.txt
 ```
 
+3. Run the game:
+
+```
+python main.py
+```
+
 ---
 
 ## Usage
 
 ### Starting the Game
 
+**Packaged executable (Windows):** double-click `GrassrootsManager.exe`. The browser opens automatically.
+
+**From source:**
+
 ```
 python main.py
 ```
 
-Open your browser and go to `http://127.0.0.1:5000/`
+In both cases the default browser opens `http://127.0.0.1:5000/` automatically after about 1.5 seconds.
+
+### Save Files and Customisation
+
+* **Saves** are stored in the `saves/` folder next to the executable (or next to `main.py` when running from source). The folder is created automatically on first launch.
+* **Assets stay external** — `templates/` and `static/` sit outside the executable, so HTML, CSS, and JavaScript can be edited without rebuilding.
+* **Keep the folders together** — the executable looks for `templates/`, `static/`, and `saves/` in its own directory. Moving the `.exe` on its own will break templates/static and hide existing saves.
 
 ### Playing the Game
 
@@ -181,6 +217,12 @@ grassroots-manager/
 ├── requirements.txt            # Python dependencies
 ├── venv-setup.md               # Virtual environment setup notes
 ├── CHANGELOG.md                # Version history
+│
+├── dist/                       # Packaged Windows build (exe + external folders)
+│   ├── GrassrootsManager.exe   # PyInstaller single-file executable
+│   ├── templates/              # Copy of templates/ (editable)
+│   ├── static/                 # Copy of static/ (editable)
+│   └── saves/                  # Player save files (auto-created)
 │
 ├── templates/
 │   ├── index.html              # Main menu
@@ -224,7 +266,51 @@ grassroots-manager/
 
 ---
 
+## Building the Executable
+
+The executable contains only the Python runtime and game logic. `templates/`, `static/`, and `saves/` stay outside it intentionally.
+
+1. Install PyInstaller:
+
+```
+python -m pip install pyinstaller
+```
+
+2. Build the single-file executable from the project root:
+
+```
+pyinstaller --onefile --noconfirm --clean --name GrassrootsManager main.py
+```
+
+Do **not** add `--add-data` — bundling the asset folders would defeat the external `templates/` and `static/` setup.
+
+3. Copy the asset folders next to the executable in `dist\`:
+
+```powershell
+Copy-Item templates, static -Destination "dist\" -Recurse -Force
+```
+
+The resulting distribution looks like this:
+
+```
+dist/
+├── GrassrootsManager.exe       # Entry point — double-click to play
+├── templates/                  # Flask HTML templates (editable)
+├── static/                     # CSS, JavaScript, and images (editable)
+└── saves/                      # Save files (created automatically)
+```
+
+You can rename `dist/` or zip it for sharing — just keep its contents together.
+
+> **Tip:** Keep the console build (the default). If you use `--windowed`, the console is hidden and closing the game requires Task Manager, because the `/exit` page does not stop the Flask server.
+
+---
+
 ## Requirements
+
+**Pre-built executable:** Windows 10/11. No Python installation or dependencies required.
+
+**Running from source:**
 
 * Python 3.x
 * Flask

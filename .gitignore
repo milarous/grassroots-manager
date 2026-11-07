@@ -5,6 +5,10 @@
 __pycache__/
 *.pyc
 
+# PyInstaller build artifacts (dist/ is kept for now)
+build/
+*.spec
+
 # Environment variables
 .env
 

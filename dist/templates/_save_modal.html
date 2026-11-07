@@ -1,0 +1,27 @@
+<div id="saveModal" class="modal">
+    <div class="modal-content">
+        <h2>Save Game</h2>
+        <p class="modal-description">Choose a slot to save your current progress.</p>
+        
+        <div id="saveSlotsContainer" class="slot-buttons">
+            <!-- Slots will be dynamically inserted here -->
+        </div>
+
+        <div id="saveForm" class="hidden" style="margin-top: 20px;">
+            <form method="POST" id="saveGameForm">
+                <div class="form-group">
+                    <label for="saveLabel">Save Label:</label>
+                    <input type="text" id="saveLabel" name="label" class="form-control" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-confirm">Confirm Save</button>
+                    <button type="button" class="btn-back" onclick="showSaveSlots()">Back</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="modal-buttons" style="margin-top: 20px;">
+            <button class="cancel" onclick="closeSaveModal()">Close</button>
+        </div>
+    </div>
+</div>
